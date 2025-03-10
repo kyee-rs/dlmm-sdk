@@ -52,7 +52,6 @@ pub struct ProtocolFee {
 }
 
 #[account(zero_copy)]
-#[repr(C)]
 #[derive(InitSpace, Debug)]
 pub struct LbPair {
     pub parameters: StaticParameters,

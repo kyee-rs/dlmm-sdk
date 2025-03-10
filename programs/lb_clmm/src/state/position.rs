@@ -13,7 +13,6 @@ use num_traits::Zero;
 use std::cell::Ref;
 
 #[account(zero_copy)]
-#[repr(C)]
 #[derive(InitSpace, Debug)]
 
 pub struct Position {
@@ -44,7 +43,6 @@ pub struct Position {
 }
 
 #[account(zero_copy)]
-#[repr(C)]
 #[derive(InitSpace, Debug)]
 pub struct PositionV2 {
     /// The LB pair of this position

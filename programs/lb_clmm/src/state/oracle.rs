@@ -79,7 +79,6 @@ impl Observation {
 }
 
 #[account(zero_copy)]
-#[repr(C)]
 #[derive(Default, Debug)]
 pub struct Oracle {
     /// Index of latest observation
