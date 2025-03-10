@@ -112,7 +112,7 @@ pub struct LbPair {
     /// Pool creator
     pub creator: Pubkey,
     /// Reserved space for future use
-    pub _reserved: [u8; 24],
+    pub _reserved: [u8; 25],
 }
 
 impl Default for LbPair {
