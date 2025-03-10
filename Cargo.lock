@@ -2395,7 +2395,6 @@ dependencies = [
  "assert_matches",
  "async-trait",
  "bincode 2.0.0",
- "borsh 0.10.3",
  "bytemuck",
  "commons",
  "mpl-token-metadata",
