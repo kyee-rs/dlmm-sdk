@@ -7,6 +7,7 @@ use ruint::aliases::U512;
 use std::ops::BitXor;
 
 #[account(zero_copy)]
+#[repr(C)]
 #[derive(Debug, InitSpace)]
 pub struct BinArrayBitmapExtension {
     pub lb_pair: Pubkey,
