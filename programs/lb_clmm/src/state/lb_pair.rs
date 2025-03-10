@@ -112,7 +112,7 @@ pub struct LbPair {
     /// Pool creator
     pub creator: Pubkey,
     /// Reserved space for future use
-    pub _reserved: [u8; 25],
+    pub _reserved: [u8; 24],
 }
 
 impl Default for LbPair {
@@ -168,7 +168,7 @@ pub struct RewardInfo {
     /// TODO check whether we need to store it in pool
     pub reward_duration_end: u64, // 8
     /// TODO check whether we need to store it in pool
-    pub reward_rate: u128, // 8
+    pub reward_rate: u64, // 8
     /// The last time reward states were updated.
     pub last_update_time: u64, // 8
     /// Accumulated seconds where when farm distribute rewards, but the bin is empty. The reward will be accumulated for next reward time window.
@@ -220,7 +220,7 @@ impl RewardInfo {
 
         safe_mul_div_cast(
             time_period.into(),
-            self.reward_rate,
+            self.reward_rate as u128,
             liquidity_supply.into(),
             Rounding::Down,
         )
@@ -252,7 +252,7 @@ impl RewardInfo {
         } else {
             let remaining_seconds = reward_duration_end.safe_sub(current_time)?;
             let leftover: u64 = safe_mul_shr_cast(
-                self.reward_rate,
+                self.reward_rate as u128,
                 remaining_seconds.into(),
                 SCALE_OFFSET,
                 Rounding::Down,
