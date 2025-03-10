@@ -168,7 +168,7 @@ pub struct RewardInfo {
     /// TODO check whether we need to store it in pool
     pub reward_duration_end: u64, // 8
     /// TODO check whether we need to store it in pool
-    pub reward_rate: u64, // 8
+    pub reward_rate: [u8; 16], // 8
     /// The last time reward states were updated.
     pub last_update_time: u64, // 8
     /// Accumulated seconds where when farm distribute rewards, but the bin is empty. The reward will be accumulated for next reward time window.
@@ -220,7 +220,7 @@ impl RewardInfo {
 
         safe_mul_div_cast(
             time_period.into(),
-            self.reward_rate as u128,
+            u128::from_le_bytes(self.reward_rate),
             liquidity_supply.into(),
             Rounding::Down,
         )
@@ -235,7 +235,7 @@ impl RewardInfo {
         let time_period =
             U256::from(last_time_reward_applicable.safe_sub(self.last_update_time.into())?);
 
-        Ok(time_period.safe_mul(U256::from(self.reward_rate))?)
+        Ok(time_period.safe_mul(U256::from(u128::from_le_bytes(self.reward_rate)))?)
     }
 
     /// Farming rate after funding
@@ -252,7 +252,7 @@ impl RewardInfo {
         } else {
             let remaining_seconds = reward_duration_end.safe_sub(current_time)?;
             let leftover: u64 = safe_mul_shr_cast(
-                self.reward_rate as u128,
+                u128::from_le_bytes(self.reward_rate),
                 remaining_seconds.into(),
                 SCALE_OFFSET,
                 Rounding::Down,
@@ -261,12 +261,13 @@ impl RewardInfo {
             total_amount = leftover.safe_add(funding_amount)?;
         }
 
-        self.reward_rate = safe_shl_div_cast(
+        self.reward_rate = safe_shl_div_cast::<u128>(
             total_amount.into(),
             self.reward_duration.into(),
             SCALE_OFFSET,
             Rounding::Down,
-        )?;
+        )?
+        .to_le_bytes();
         self.last_update_time = current_time;
         self.reward_duration_end = current_time.safe_add(self.reward_duration)?;
 
