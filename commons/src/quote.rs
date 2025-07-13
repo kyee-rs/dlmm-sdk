@@ -49,7 +49,7 @@ pub fn quote_exact_out(
     lb_pair: &mut LbPair,
     mut amount_out: u64,
     swap_for_y: bool,
-    bin_arrays: HashMap<Pubkey, BinArray>,
+    mut bin_arrays: HashMap<Pubkey, BinArray>,
     bitmap_extension: Option<&BinArrayBitmapExtension>,
     clock: &Clock,
     mint_x_account: &Account,
@@ -87,12 +87,11 @@ pub fn quote_exact_out(
         .context("Pool out of liquidity")?;
 
         let active_bin_array = bin_arrays
-            .get(&active_bin_array_pubkey)
+            .get_mut(&active_bin_array_pubkey)
             .ok_or_else(|| anyhow::anyhow!("Active bin array not found"))?;
-        
-        let mut active_bin_array = active_bin_array.clone();
+
         let mut last_active_id = None;
-        
+
         loop {
             if !active_bin_array.is_bin_id_within_range(lb_pair.active_id)? || amount_out == 0 {
                 break;
@@ -148,7 +147,7 @@ pub fn quote_exact_in(
     lb_pair: &mut LbPair,
     amount_in: u64,
     swap_for_y: bool,
-    bin_arrays: HashMap<Pubkey, BinArray>,
+    mut bin_arrays: HashMap<Pubkey, BinArray>,
     bitmap_extension: Option<&BinArrayBitmapExtension>,
     clock: &Clock,
     mint_x_account: &Account,
@@ -188,12 +187,11 @@ pub fn quote_exact_in(
         .context("Pool out of liquidity")?;
 
         let active_bin_array = bin_arrays
-            .get(&active_bin_array_pubkey)
+            .get_mut(&active_bin_array_pubkey)
             .ok_or_else(|| anyhow::anyhow!("Active bin array not found"))?;
-        
-        let mut active_bin_array = active_bin_array.clone();
+
         let mut last_active_id = None;
-        
+
         loop {
             if !active_bin_array.is_bin_id_within_range(lb_pair.active_id)? || amount_left == 0 {
                 break;
