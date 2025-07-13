@@ -46,7 +46,7 @@ fn validate_swap_activation(
 #[allow(clippy::too_many_arguments)]
 pub fn quote_exact_out(
     lb_pair_pubkey: Pubkey,
-    lb_pair: &LbPair,
+    lb_pair: &mut LbPair,
     mut amount_out: u64,
     swap_for_y: bool,
     bin_arrays: HashMap<Pubkey, BinArray>,
@@ -61,7 +61,6 @@ pub fn quote_exact_out(
 
     validate_swap_activation(lb_pair, current_timestamp, current_slot)?;
 
-    let mut lb_pair = *lb_pair;
     lb_pair.update_references(current_timestamp as i64)?;
 
     let mut total_amount_in: u64 = 0;
@@ -79,7 +78,7 @@ pub fn quote_exact_out(
     while amount_out > 0 {
         let active_bin_array_pubkey = get_bin_array_pubkeys_for_swap(
             lb_pair_pubkey,
-            &lb_pair,
+            lb_pair,
             bitmap_extension,
             swap_for_y,
             1,
@@ -90,14 +89,18 @@ pub fn quote_exact_out(
         let mut active_bin_array = bin_arrays
             .get(&active_bin_array_pubkey)
             .cloned()
-            .context("Active bin array not found")?;
+            .ok_or_else(|| anyhow::anyhow!("Active bin array not found"))?;
 
+        let mut last_active_id = None;
         loop {
             if !active_bin_array.is_bin_id_within_range(lb_pair.active_id)? || amount_out == 0 {
                 break;
             }
 
-            lb_pair.update_volatility_accumulator()?;
+            if last_active_id != Some(lb_pair.active_id) {
+                lb_pair.update_volatility_accumulator()?;
+                last_active_id = Some(lb_pair.active_id);
+            }
 
             let active_bin = active_bin_array.get_bin_mut(lb_pair.active_id)?;
             let price = active_bin.get_or_store_bin_price(lb_pair.active_id, lb_pair.bin_step)?;
@@ -111,9 +114,7 @@ pub fn quote_exact_out(
                     total_amount_in = total_amount_in
                         .checked_add(max_amount_in)
                         .context("MathOverflow")?;
-
                     total_fee = total_fee.checked_add(max_fee).context("MathOverflow")?;
-
                     amount_out = amount_out
                         .checked_sub(bin_max_amount_out)
                         .context("MathOverflow")?;
@@ -124,7 +125,6 @@ pub fn quote_exact_out(
                     total_amount_in = total_amount_in
                         .checked_add(amount_in)
                         .context("MathOverflow")?;
-
                     total_fee = total_fee.checked_add(fee).context("MathOverflow")?;
 
                     amount_out = 0;
@@ -153,7 +153,7 @@ pub fn quote_exact_out(
 #[allow(clippy::too_many_arguments)]
 pub fn quote_exact_in(
     lb_pair_pubkey: Pubkey,
-    lb_pair: &LbPair,
+    lb_pair: &mut LbPair,
     amount_in: u64,
     swap_for_y: bool,
     bin_arrays: HashMap<Pubkey, BinArray>,
@@ -168,7 +168,6 @@ pub fn quote_exact_in(
 
     validate_swap_activation(lb_pair, current_timestamp, current_slot)?;
 
-    let mut lb_pair = *lb_pair;
     lb_pair.update_references(current_timestamp as i64)?;
 
     let mut total_amount_out: u64 = 0;
@@ -188,7 +187,7 @@ pub fn quote_exact_in(
     while amount_left > 0 {
         let active_bin_array_pubkey = get_bin_array_pubkeys_for_swap(
             lb_pair_pubkey,
-            &lb_pair,
+            lb_pair,
             bitmap_extension,
             swap_for_y,
             1,
@@ -199,28 +198,36 @@ pub fn quote_exact_in(
         let mut active_bin_array = bin_arrays
             .get(&active_bin_array_pubkey)
             .cloned()
-            .context("Active bin array not found")?;
+            .ok_or_else(|| anyhow::anyhow!("Active bin array not found"))?;
 
+        let mut last_active_id = None;
         loop {
             if !active_bin_array.is_bin_id_within_range(lb_pair.active_id)? || amount_left == 0 {
                 break;
             }
 
-            lb_pair.update_volatility_accumulator()?;
+            if last_active_id != Some(lb_pair.active_id) {
+                lb_pair.update_volatility_accumulator()?;
+                last_active_id = Some(lb_pair.active_id);
+            }
 
             let active_bin = active_bin_array.get_bin_mut(lb_pair.active_id)?;
             let price = active_bin.get_or_store_bin_price(lb_pair.active_id, lb_pair.bin_step)?;
 
             if !active_bin.is_empty(!swap_for_y) {
-                let SwapResult {
-                    amount_in_with_fees,
-                    amount_out,
-                    fee,
-                    ..
-                } = active_bin.swap(amount_left, price, swap_for_y, &lb_pair, None)?;
+                let bin_max_amount_out = active_bin.get_max_amount_out(swap_for_y);
+                let max_amount_in = active_bin.get_max_amount_in(price, swap_for_y)?;
+                let (amount_in, amount_out, fee) = if amount_left >= max_amount_in {
+                    let max_fee = lb_pair.compute_fee(max_amount_in)?;
+                    (max_amount_in, bin_max_amount_out, max_fee)
+                } else {
+                    let amount_out = Bin::get_amount_out(amount_left, price, swap_for_y)?;
+                    let fee = lb_pair.compute_fee(amount_left)?;
+                    (amount_left, amount_out, fee)
+                };
 
                 amount_left = amount_left
-                    .checked_sub(amount_in_with_fees)
+                    .checked_sub(amount_in)
                     .context("MathOverflow")?;
 
                 total_amount_out = total_amount_out
@@ -252,7 +259,7 @@ pub fn get_bin_array_pubkeys_for_swap(
     take_count: u8,
 ) -> Result<Vec<Pubkey>> {
     let mut start_bin_array_idx = BinArray::bin_id_to_bin_array_index(lb_pair.active_id)?;
-    let mut bin_array_idx = vec![];
+    let mut bin_array_idx = Vec::with_capacity(take_count as usize);
     let increment = if swap_for_y { -1 } else { 1 };
 
     loop {
@@ -293,7 +300,7 @@ pub fn get_bin_array_pubkeys_for_swap(
         }
     }
 
-    let bin_array_pubkeys = bin_array_idx
+    let bin_array_pubkeys: Vec<Pubkey> = bin_array_idx
         .into_iter()
         .map(|idx| derive_bin_array_pda(lb_pair_pubkey, idx.into()).0)
         .collect();
@@ -381,7 +388,7 @@ mod tests {
 
         let quote_result = quote_exact_out(
             sol_usdc,
-            &lb_pair,
+            &mut lb_pair.clone(),
             out_sol_amount,
             false,
             bin_arrays.clone(),
@@ -401,7 +408,7 @@ mod tests {
 
         let quote_result = quote_exact_in(
             sol_usdc,
-            &lb_pair,
+            &mut lb_pair.clone(),
             in_amount,
             false,
             bin_arrays.clone(),
@@ -422,7 +429,7 @@ mod tests {
 
         let quote_result = quote_exact_out(
             sol_usdc,
-            &lb_pair,
+            &mut lb_pair.clone(),
             out_usdc_amount,
             true,
             bin_arrays.clone(),
@@ -442,7 +449,7 @@ mod tests {
 
         let quote_result = quote_exact_in(
             sol_usdc,
-            &lb_pair,
+            &mut lb_pair.clone(),
             in_amount,
             true,
             bin_arrays,
@@ -516,10 +523,11 @@ mod tests {
         let in_sol_amount = 1_000_000_000;
 
         let clock = get_clock(rpc_client).await.unwrap();
+        let timer = std::time::Instant::now();
 
         let quote_result = quote_exact_in(
             sol_usdc,
-            &lb_pair,
+            &mut lb_pair.clone(),
             in_sol_amount,
             true,
             bin_arrays.clone(),
@@ -531,16 +539,18 @@ mod tests {
         .unwrap();
 
         println!(
-            "1 SOL -> {:?} USDC",
-            quote_result.amount_out as f64 / 1_000_000.0
+            "1 SOL -> {:?} USDC, time: {:?}",
+            quote_result.amount_out as f64 / 1_000_000.0,
+            timer.elapsed()
         );
 
         // 100 USDC -> SOL
         let in_usdc_amount = 100_000_000;
 
+        let timer = std::time::Instant::now();
         let quote_result = quote_exact_in(
             sol_usdc,
-            &lb_pair,
+            &mut lb_pair.clone(),
             in_usdc_amount,
             false,
             bin_arrays.clone(),
@@ -552,8 +562,355 @@ mod tests {
         .unwrap();
 
         println!(
-            "100 USDC -> {:?} SOL",
-            quote_result.amount_out as f64 / 1_000_000_000.0
+            "100 USDC -> {:?} SOL, time: {:?}",
+            quote_result.amount_out as f64 / 1_000_000_000.0,
+            timer.elapsed()
         );
+    }
+
+    #[tokio::test]
+    async fn test_swap_quote_exact_in_100_times() {
+        let rpc_client = RpcClient::new(Cluster::Mainnet.url().to_string());
+        let sol_usdc = Pubkey::from_str("HTvjzsfX3yU6BUodCjZ5vZkUrAxMDTrBs3CJaq43ashR").unwrap();
+
+        let lb_pair_account = rpc_client.get_account(&sol_usdc).await.unwrap();
+        let lb_pair = LbPairAccount::deserialize(&lb_pair_account.data).unwrap().0;
+
+        let mut mint_accounts = rpc_client
+            .get_multiple_accounts(&[lb_pair.token_x_mint, lb_pair.token_y_mint])
+            .await
+            .unwrap();
+
+        let mint_x_account = mint_accounts[0].take().unwrap();
+        let mint_y_account = mint_accounts[1].take().unwrap();
+
+        let left_bin_array_pubkeys =
+            get_bin_array_pubkeys_for_swap(sol_usdc, &lb_pair, None, true, 3).unwrap();
+        let right_bin_array_pubkeys =
+            get_bin_array_pubkeys_for_swap(sol_usdc, &lb_pair, None, false, 3).unwrap();
+
+        let bin_array_pubkeys = left_bin_array_pubkeys
+            .into_iter()
+            .chain(right_bin_array_pubkeys.into_iter())
+            .collect::<Vec<Pubkey>>();
+
+        let accounts = rpc_client
+            .get_multiple_accounts(&bin_array_pubkeys)
+            .await
+            .unwrap();
+
+        let bin_arrays = accounts
+            .into_iter()
+            .zip(bin_array_pubkeys.into_iter())
+            .map(|(account, key)| {
+                (
+                    key,
+                    BinArrayAccount::deserialize(&account.unwrap().data)
+                        .unwrap()
+                        .0,
+                )
+            })
+            .collect::<HashMap<_, _>>();
+
+        let in_sol_amount = 1_000_000_000;
+        let clock = get_clock(rpc_client).await.unwrap();
+
+        let timer = std::time::Instant::now();
+
+        for _ in 0..100_000 {
+            let _quote_result = quote_exact_in(
+                sol_usdc,
+                &mut lb_pair.clone(),
+                in_sol_amount,
+                true,
+                bin_arrays.clone(),
+                None,
+                &clock,
+                &mint_x_account,
+                &mint_y_account,
+            )
+            .unwrap();
+        }
+
+        println!("100_000 quotes completed in: {:?}", timer.elapsed());
+    }
+
+    #[tokio::test]
+    async fn test_swap_quote_exact_in_100k_parallel_async() {
+        let rpc_client = RpcClient::new(Cluster::Mainnet.url().to_string());
+        let sol_usdc = Pubkey::from_str("HTvjzsfX3yU6BUodCjZ5vZkUrAxMDTrBs3CJaq43ashR").unwrap();
+
+        let lb_pair_account = rpc_client.get_account(&sol_usdc).await.unwrap();
+        let lb_pair = LbPairAccount::deserialize(&lb_pair_account.data).unwrap().0;
+
+        let mut mint_accounts = rpc_client
+            .get_multiple_accounts(&[lb_pair.token_x_mint, lb_pair.token_y_mint])
+            .await
+            .unwrap();
+
+        let mint_x_account = mint_accounts[0].take().unwrap();
+        let mint_y_account = mint_accounts[1].take().unwrap();
+
+        let left_bin_array_pubkeys =
+            get_bin_array_pubkeys_for_swap(sol_usdc, &lb_pair, None, true, 3).unwrap();
+        let right_bin_array_pubkeys =
+            get_bin_array_pubkeys_for_swap(sol_usdc, &lb_pair, None, false, 3).unwrap();
+
+        let bin_array_pubkeys = left_bin_array_pubkeys
+            .into_iter()
+            .chain(right_bin_array_pubkeys.into_iter())
+            .collect::<Vec<Pubkey>>();
+
+        let accounts = rpc_client
+            .get_multiple_accounts(&bin_array_pubkeys)
+            .await
+            .unwrap();
+
+        let bin_arrays = accounts
+            .into_iter()
+            .zip(bin_array_pubkeys.into_iter())
+            .map(|(account, key)| {
+                (
+                    key,
+                    BinArrayAccount::deserialize(&account.unwrap().data)
+                        .unwrap()
+                        .0,
+                )
+            })
+            .collect::<HashMap<_, _>>();
+
+        let in_sol_amount = 1_000_000_000;
+        let clock = get_clock(rpc_client).await.unwrap();
+
+        let timer = std::time::Instant::now();
+
+        let tasks = (0..100_000).map(|_| {
+            let bin_arrays = bin_arrays.clone();
+            let mint_x_account = mint_x_account.clone();
+            let mint_y_account = mint_y_account.clone();
+            let clock = clock.clone();
+            
+            tokio::spawn(async move {
+                quote_exact_in(
+                    sol_usdc,
+                    &mut lb_pair.clone(),
+                    in_sol_amount,
+                    true,
+                    bin_arrays,
+                    None,
+                    &clock,
+                    &mint_x_account,
+                    &mint_y_account,
+                )
+            })
+        });
+
+        let results = futures_util::future::join_all(tasks).await;
+        
+        for result in results {
+            result.unwrap().unwrap();
+        }
+
+        println!("100_000 parallel async quotes completed in: {:?}", timer.elapsed());
+    }
+
+    #[tokio::test]
+    async fn test_swap_quote_exact_in_100k_parallel_rayon() {
+        use rayon::prelude::*;
+        
+        let rpc_client = RpcClient::new(Cluster::Mainnet.url().to_string());
+        let sol_usdc = Pubkey::from_str("HTvjzsfX3yU6BUodCjZ5vZkUrAxMDTrBs3CJaq43ashR").unwrap();
+
+        let lb_pair_account = rpc_client.get_account(&sol_usdc).await.unwrap();
+        let lb_pair = LbPairAccount::deserialize(&lb_pair_account.data).unwrap().0;
+
+        let mut mint_accounts = rpc_client
+            .get_multiple_accounts(&[lb_pair.token_x_mint, lb_pair.token_y_mint])
+            .await
+            .unwrap();
+
+        let mint_x_account = mint_accounts[0].take().unwrap();
+        let mint_y_account = mint_accounts[1].take().unwrap();
+
+        let left_bin_array_pubkeys =
+            get_bin_array_pubkeys_for_swap(sol_usdc, &lb_pair, None, true, 3).unwrap();
+        let right_bin_array_pubkeys =
+            get_bin_array_pubkeys_for_swap(sol_usdc, &lb_pair, None, false, 3).unwrap();
+
+        let bin_array_pubkeys = left_bin_array_pubkeys
+            .into_iter()
+            .chain(right_bin_array_pubkeys.into_iter())
+            .collect::<Vec<Pubkey>>();
+
+        let accounts = rpc_client
+            .get_multiple_accounts(&bin_array_pubkeys)
+            .await
+            .unwrap();
+
+        let bin_arrays = accounts
+            .into_iter()
+            .zip(bin_array_pubkeys.into_iter())
+            .map(|(account, key)| {
+                (
+                    key,
+                    BinArrayAccount::deserialize(&account.unwrap().data)
+                        .unwrap()
+                        .0,
+                )
+            })
+            .collect::<HashMap<_, _>>();
+
+        let in_sol_amount = 1_000_000_000;
+        let clock = get_clock(rpc_client).await.unwrap();
+
+        let timer = std::time::Instant::now();
+
+        let results: Vec<_> = (0..100_000)
+            .into_par_iter()
+            .map(|_| {
+                quote_exact_in(
+                    sol_usdc,
+                    &mut lb_pair.clone(),
+                    in_sol_amount,
+                    true,
+                    bin_arrays.clone(),
+                    None,
+                    &clock,
+                    &mint_x_account,
+                    &mint_y_account,
+                )
+            })
+            .collect();
+
+        for result in results {
+            result.unwrap();
+        }
+
+        println!("100_000 parallel rayon quotes completed in: {:?}", timer.elapsed());
+    }
+
+    #[tokio::test]
+    async fn test_compare_parallel_performance() {
+        use rayon::prelude::*;
+        
+        let rpc_client = RpcClient::new(Cluster::Mainnet.url().to_string());
+        let sol_usdc = Pubkey::from_str("HTvjzsfX3yU6BUodCjZ5vZkUrAxMDTrBs3CJaq43ashR").unwrap();
+
+        let lb_pair_account = rpc_client.get_account(&sol_usdc).await.unwrap();
+        let lb_pair = LbPairAccount::deserialize(&lb_pair_account.data).unwrap().0;
+
+        let mut mint_accounts = rpc_client
+            .get_multiple_accounts(&[lb_pair.token_x_mint, lb_pair.token_y_mint])
+            .await
+            .unwrap();
+
+        let mint_x_account = mint_accounts[0].take().unwrap();
+        let mint_y_account = mint_accounts[1].take().unwrap();
+
+        let left_bin_array_pubkeys =
+            get_bin_array_pubkeys_for_swap(sol_usdc, &lb_pair, None, true, 3).unwrap();
+        let right_bin_array_pubkeys =
+            get_bin_array_pubkeys_for_swap(sol_usdc, &lb_pair, None, false, 3).unwrap();
+
+        let bin_array_pubkeys = left_bin_array_pubkeys
+            .into_iter()
+            .chain(right_bin_array_pubkeys.into_iter())
+            .collect::<Vec<Pubkey>>();
+
+        let accounts = rpc_client
+            .get_multiple_accounts(&bin_array_pubkeys)
+            .await
+            .unwrap();
+
+        let bin_arrays = accounts
+            .into_iter()
+            .zip(bin_array_pubkeys.into_iter())
+            .map(|(account, key)| {
+                (
+                    key,
+                    BinArrayAccount::deserialize(&account.unwrap().data)
+                        .unwrap()
+                        .0,
+                )
+            })
+            .collect::<HashMap<_, _>>();
+
+        let in_sol_amount = 1_000_000_000;
+        let clock = get_clock(rpc_client).await.unwrap();
+
+        println!("Performance comparison for 100,000 quotes:");
+
+        let timer = std::time::Instant::now();
+        for _ in 0..100_000 {
+            let _quote_result = quote_exact_in(
+                sol_usdc,
+                &mut lb_pair.clone(),
+                in_sol_amount,
+                true,
+                bin_arrays.clone(),
+                None,
+                &clock,
+                &mint_x_account,
+                &mint_y_account,
+            )
+            .unwrap();
+        }
+        let sequential_time = timer.elapsed();
+        println!("Sequential: {:?}", sequential_time);
+
+        let timer = std::time::Instant::now();
+        let tasks = (0..100_000).map(|_| {
+            let bin_arrays = bin_arrays.clone();
+            let mint_x_account = mint_x_account.clone();
+            let mint_y_account = mint_y_account.clone();
+            let clock = clock.clone();
+            
+            tokio::spawn(async move {
+                quote_exact_in(
+                    sol_usdc,
+                    &mut lb_pair.clone(),
+                    in_sol_amount,
+                    true,
+                    bin_arrays,
+                    None,
+                    &clock,
+                    &mint_x_account,
+                    &mint_y_account,
+                )
+            })
+        });
+        let results = futures_util::future::join_all(tasks).await;
+        for result in results {
+            result.unwrap().unwrap();
+        }
+        let async_time = timer.elapsed();
+        println!("Async parallel: {:?}", async_time);
+
+        let timer = std::time::Instant::now();
+        let results: Vec<_> = (0..100_000)
+            .into_par_iter()
+            .map(|_| {
+                quote_exact_in(
+                    sol_usdc,
+                    &mut lb_pair.clone(),
+                    in_sol_amount,
+                    true,
+                    bin_arrays.clone(),
+                    None,
+                    &clock,
+                    &mint_x_account,
+                    &mint_y_account,
+                )
+            })
+            .collect();
+        for result in results {
+            result.unwrap();
+        }
+        let rayon_time = timer.elapsed();
+        println!("Rayon parallel: {:?}", rayon_time);
+
+        println!("Speedup vs sequential:");
+        println!("Async: {:.2}x", sequential_time.as_secs_f64() / async_time.as_secs_f64());
+        println!("Rayon: {:.2}x", sequential_time.as_secs_f64() / rayon_time.as_secs_f64());
     }
 }

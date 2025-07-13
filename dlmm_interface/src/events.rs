@@ -22,11 +22,9 @@ impl CompositionFeeEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != COMPOSITION_FEE_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    COMPOSITION_FEE_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {COMPOSITION_FEE_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -54,11 +52,9 @@ impl AddLiquidityEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != ADD_LIQUIDITY_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    ADD_LIQUIDITY_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {ADD_LIQUIDITY_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -86,11 +82,9 @@ impl RemoveLiquidityEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != REMOVE_LIQUIDITY_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    REMOVE_LIQUIDITY_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {REMOVE_LIQUIDITY_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -124,11 +118,9 @@ impl SwapEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != SWAP_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    SWAP_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {SWAP_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -156,11 +148,9 @@ impl ClaimRewardEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != CLAIM_REWARD_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    CLAIM_REWARD_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {CLAIM_REWARD_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -187,11 +177,9 @@ impl FundRewardEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != FUND_REWARD_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    FUND_REWARD_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {FUND_REWARD_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -219,11 +207,9 @@ impl InitializeRewardEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != INITIALIZE_REWARD_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    INITIALIZE_REWARD_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {INITIALIZE_REWARD_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -250,11 +236,9 @@ impl UpdateRewardDurationEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != UPDATE_REWARD_DURATION_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    UPDATE_REWARD_DURATION_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {UPDATE_REWARD_DURATION_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -281,11 +265,9 @@ impl UpdateRewardFunderEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != UPDATE_REWARD_FUNDER_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    UPDATE_REWARD_FUNDER_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {UPDATE_REWARD_FUNDER_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -310,11 +292,9 @@ impl PositionCloseEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != POSITION_CLOSE_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    POSITION_CLOSE_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {POSITION_CLOSE_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -342,11 +322,9 @@ impl ClaimFeeEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != CLAIM_FEE_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    CLAIM_FEE_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {CLAIM_FEE_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -373,11 +351,9 @@ impl LbPairCreateEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != LB_PAIR_CREATE_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    LB_PAIR_CREATE_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {LB_PAIR_CREATE_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -403,11 +379,9 @@ impl PositionCreateEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != POSITION_CREATE_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    POSITION_CREATE_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {POSITION_CREATE_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -435,11 +409,9 @@ impl IncreasePositionLengthEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != INCREASE_POSITION_LENGTH_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    INCREASE_POSITION_LENGTH_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {INCREASE_POSITION_LENGTH_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -467,11 +439,9 @@ impl DecreasePositionLengthEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != DECREASE_POSITION_LENGTH_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    DECREASE_POSITION_LENGTH_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {DECREASE_POSITION_LENGTH_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -497,11 +467,9 @@ impl FeeParameterUpdateEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != FEE_PARAMETER_UPDATE_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    FEE_PARAMETER_UPDATE_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {FEE_PARAMETER_UPDATE_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -530,11 +498,9 @@ impl DynamicFeeParameterUpdateEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != DYNAMIC_FEE_PARAMETER_UPDATE_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    DYNAMIC_FEE_PARAMETER_UPDATE_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {DYNAMIC_FEE_PARAMETER_UPDATE_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -559,11 +525,9 @@ impl IncreaseObservationEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != INCREASE_OBSERVATION_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    INCREASE_OBSERVATION_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {INCREASE_OBSERVATION_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -589,11 +553,9 @@ impl WithdrawIneligibleRewardEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != WITHDRAW_INELIGIBLE_REWARD_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    WITHDRAW_INELIGIBLE_REWARD_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {WITHDRAW_INELIGIBLE_REWARD_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -619,11 +581,9 @@ impl UpdatePositionOperatorEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != UPDATE_POSITION_OPERATOR_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    UPDATE_POSITION_OPERATOR_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {UPDATE_POSITION_OPERATOR_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -652,11 +612,9 @@ impl UpdatePositionLockReleasePointEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != UPDATE_POSITION_LOCK_RELEASE_POINT_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    UPDATE_POSITION_LOCK_RELEASE_POINT_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {UPDATE_POSITION_LOCK_RELEASE_POINT_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }
@@ -682,11 +640,9 @@ impl GoToABinEvent {
     pub fn deserialize(buf: &mut &[u8]) -> std::io::Result<Self> {
         let maybe_discm = <[u8; 8]>::deserialize(buf)?;
         if maybe_discm != GO_TO_A_BIN_EVENT_DISCM {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            return Err(std::io::Error::other(
                 format!(
-                    "discm does not match. Expected: {:?}. Received: {:?}",
-                    GO_TO_A_BIN_EVENT_DISCM, maybe_discm
+                    "discm does not match. Expected: {GO_TO_A_BIN_EVENT_DISCM:?}. Received: {maybe_discm:?}"
                 ),
             ));
         }

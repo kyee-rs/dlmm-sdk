@@ -1,19 +1,19 @@
+use crate::*;
 use borsh::{BorshDeserialize, BorshSerialize};
 use solana_program::{
-    account_info::AccountInfo, entrypoint::ProgramResult,
+    account_info::AccountInfo,
+    entrypoint::ProgramResult,
     instruction::{AccountMeta, Instruction},
     program::{invoke, invoke_signed},
-    pubkey::Pubkey, program_error::ProgramError,
+    program_error::ProgramError,
+    pubkey::Pubkey,
 };
 use std::io::Read;
-use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub enum LbClmmProgramIx {
     InitializeLbPair(InitializeLbPairIxArgs),
     InitializePermissionLbPair(InitializePermissionLbPairIxArgs),
-    InitializeCustomizablePermissionlessLbPair(
-        InitializeCustomizablePermissionlessLbPairIxArgs,
-    ),
+    InitializeCustomizablePermissionlessLbPair(InitializeCustomizablePermissionlessLbPairIxArgs),
     InitializeBinArrayBitmapExtension,
     InitializeBinArray(InitializeBinArrayIxArgs),
     AddLiquidity(AddLiquidityIxArgs),
@@ -61,9 +61,7 @@ pub enum LbClmmProgramIx {
     CloseClaimProtocolFeeOperator,
     InitializePresetParameter2(InitializePresetParameter2IxArgs),
     InitializeLbPair2(InitializeLbPair2IxArgs),
-    InitializeCustomizablePermissionlessLbPair2(
-        InitializeCustomizablePermissionlessLbPair2IxArgs,
-    ),
+    InitializeCustomizablePermissionlessLbPair2(InitializeCustomizablePermissionlessLbPair2IxArgs),
     ClaimFee2(ClaimFee2IxArgs),
     ClaimReward2(ClaimReward2IxArgs),
     AddLiquidity2(AddLiquidity2IxArgs),
@@ -84,336 +82,171 @@ impl LbClmmProgramIx {
         let mut maybe_discm = [0u8; 8];
         reader.read_exact(&mut maybe_discm)?;
         match maybe_discm {
-            INITIALIZE_LB_PAIR_IX_DISCM => {
-                Ok(
-                    Self::InitializeLbPair(
-                        InitializeLbPairIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            INITIALIZE_PERMISSION_LB_PAIR_IX_DISCM => {
-                Ok(
-                    Self::InitializePermissionLbPair(
-                        InitializePermissionLbPairIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
+            INITIALIZE_LB_PAIR_IX_DISCM => Ok(Self::InitializeLbPair(
+                InitializeLbPairIxArgs::deserialize(&mut reader)?,
+            )),
+            INITIALIZE_PERMISSION_LB_PAIR_IX_DISCM => Ok(Self::InitializePermissionLbPair(
+                InitializePermissionLbPairIxArgs::deserialize(&mut reader)?,
+            )),
             INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_DISCM => {
-                Ok(
-                    Self::InitializeCustomizablePermissionlessLbPair(
-                        InitializeCustomizablePermissionlessLbPairIxArgs::deserialize(
-                            &mut reader,
-                        )?,
-                    ),
-                )
+                Ok(Self::InitializeCustomizablePermissionlessLbPair(
+                    InitializeCustomizablePermissionlessLbPairIxArgs::deserialize(&mut reader)?,
+                ))
             }
             INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_DISCM => {
                 Ok(Self::InitializeBinArrayBitmapExtension)
             }
-            INITIALIZE_BIN_ARRAY_IX_DISCM => {
-                Ok(
-                    Self::InitializeBinArray(
-                        InitializeBinArrayIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            ADD_LIQUIDITY_IX_DISCM => {
-                Ok(Self::AddLiquidity(AddLiquidityIxArgs::deserialize(&mut reader)?))
-            }
-            ADD_LIQUIDITY_BY_WEIGHT_IX_DISCM => {
-                Ok(
-                    Self::AddLiquidityByWeight(
-                        AddLiquidityByWeightIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            ADD_LIQUIDITY_BY_STRATEGY_IX_DISCM => {
-                Ok(
-                    Self::AddLiquidityByStrategy(
-                        AddLiquidityByStrategyIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_DISCM => {
-                Ok(
-                    Self::AddLiquidityByStrategyOneSide(
-                        AddLiquidityByStrategyOneSideIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            ADD_LIQUIDITY_ONE_SIDE_IX_DISCM => {
-                Ok(
-                    Self::AddLiquidityOneSide(
-                        AddLiquidityOneSideIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            REMOVE_LIQUIDITY_IX_DISCM => {
-                Ok(
-                    Self::RemoveLiquidity(
-                        RemoveLiquidityIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            INITIALIZE_POSITION_IX_DISCM => {
-                Ok(
-                    Self::InitializePosition(
-                        InitializePositionIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            INITIALIZE_POSITION_PDA_IX_DISCM => {
-                Ok(
-                    Self::InitializePositionPda(
-                        InitializePositionPdaIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            INITIALIZE_POSITION_BY_OPERATOR_IX_DISCM => {
-                Ok(
-                    Self::InitializePositionByOperator(
-                        InitializePositionByOperatorIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            UPDATE_POSITION_OPERATOR_IX_DISCM => {
-                Ok(
-                    Self::UpdatePositionOperator(
-                        UpdatePositionOperatorIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
+            INITIALIZE_BIN_ARRAY_IX_DISCM => Ok(Self::InitializeBinArray(
+                InitializeBinArrayIxArgs::deserialize(&mut reader)?,
+            )),
+            ADD_LIQUIDITY_IX_DISCM => Ok(Self::AddLiquidity(AddLiquidityIxArgs::deserialize(
+                &mut reader,
+            )?)),
+            ADD_LIQUIDITY_BY_WEIGHT_IX_DISCM => Ok(Self::AddLiquidityByWeight(
+                AddLiquidityByWeightIxArgs::deserialize(&mut reader)?,
+            )),
+            ADD_LIQUIDITY_BY_STRATEGY_IX_DISCM => Ok(Self::AddLiquidityByStrategy(
+                AddLiquidityByStrategyIxArgs::deserialize(&mut reader)?,
+            )),
+            ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_DISCM => Ok(Self::AddLiquidityByStrategyOneSide(
+                AddLiquidityByStrategyOneSideIxArgs::deserialize(&mut reader)?,
+            )),
+            ADD_LIQUIDITY_ONE_SIDE_IX_DISCM => Ok(Self::AddLiquidityOneSide(
+                AddLiquidityOneSideIxArgs::deserialize(&mut reader)?,
+            )),
+            REMOVE_LIQUIDITY_IX_DISCM => Ok(Self::RemoveLiquidity(
+                RemoveLiquidityIxArgs::deserialize(&mut reader)?,
+            )),
+            INITIALIZE_POSITION_IX_DISCM => Ok(Self::InitializePosition(
+                InitializePositionIxArgs::deserialize(&mut reader)?,
+            )),
+            INITIALIZE_POSITION_PDA_IX_DISCM => Ok(Self::InitializePositionPda(
+                InitializePositionPdaIxArgs::deserialize(&mut reader)?,
+            )),
+            INITIALIZE_POSITION_BY_OPERATOR_IX_DISCM => Ok(Self::InitializePositionByOperator(
+                InitializePositionByOperatorIxArgs::deserialize(&mut reader)?,
+            )),
+            UPDATE_POSITION_OPERATOR_IX_DISCM => Ok(Self::UpdatePositionOperator(
+                UpdatePositionOperatorIxArgs::deserialize(&mut reader)?,
+            )),
             SWAP_IX_DISCM => Ok(Self::Swap(SwapIxArgs::deserialize(&mut reader)?)),
-            SWAP_EXACT_OUT_IX_DISCM => {
-                Ok(Self::SwapExactOut(SwapExactOutIxArgs::deserialize(&mut reader)?))
-            }
-            SWAP_WITH_PRICE_IMPACT_IX_DISCM => {
-                Ok(
-                    Self::SwapWithPriceImpact(
-                        SwapWithPriceImpactIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            WITHDRAW_PROTOCOL_FEE_IX_DISCM => {
-                Ok(
-                    Self::WithdrawProtocolFee(
-                        WithdrawProtocolFeeIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            INITIALIZE_REWARD_IX_DISCM => {
-                Ok(
-                    Self::InitializeReward(
-                        InitializeRewardIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            FUND_REWARD_IX_DISCM => {
-                Ok(Self::FundReward(FundRewardIxArgs::deserialize(&mut reader)?))
-            }
-            UPDATE_REWARD_FUNDER_IX_DISCM => {
-                Ok(
-                    Self::UpdateRewardFunder(
-                        UpdateRewardFunderIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            UPDATE_REWARD_DURATION_IX_DISCM => {
-                Ok(
-                    Self::UpdateRewardDuration(
-                        UpdateRewardDurationIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            CLAIM_REWARD_IX_DISCM => {
-                Ok(Self::ClaimReward(ClaimRewardIxArgs::deserialize(&mut reader)?))
-            }
+            SWAP_EXACT_OUT_IX_DISCM => Ok(Self::SwapExactOut(SwapExactOutIxArgs::deserialize(
+                &mut reader,
+            )?)),
+            SWAP_WITH_PRICE_IMPACT_IX_DISCM => Ok(Self::SwapWithPriceImpact(
+                SwapWithPriceImpactIxArgs::deserialize(&mut reader)?,
+            )),
+            WITHDRAW_PROTOCOL_FEE_IX_DISCM => Ok(Self::WithdrawProtocolFee(
+                WithdrawProtocolFeeIxArgs::deserialize(&mut reader)?,
+            )),
+            INITIALIZE_REWARD_IX_DISCM => Ok(Self::InitializeReward(
+                InitializeRewardIxArgs::deserialize(&mut reader)?,
+            )),
+            FUND_REWARD_IX_DISCM => Ok(Self::FundReward(FundRewardIxArgs::deserialize(
+                &mut reader,
+            )?)),
+            UPDATE_REWARD_FUNDER_IX_DISCM => Ok(Self::UpdateRewardFunder(
+                UpdateRewardFunderIxArgs::deserialize(&mut reader)?,
+            )),
+            UPDATE_REWARD_DURATION_IX_DISCM => Ok(Self::UpdateRewardDuration(
+                UpdateRewardDurationIxArgs::deserialize(&mut reader)?,
+            )),
+            CLAIM_REWARD_IX_DISCM => Ok(Self::ClaimReward(ClaimRewardIxArgs::deserialize(
+                &mut reader,
+            )?)),
             CLAIM_FEE_IX_DISCM => Ok(Self::ClaimFee),
             CLOSE_POSITION_IX_DISCM => Ok(Self::ClosePosition),
-            UPDATE_BASE_FEE_PARAMETERS_IX_DISCM => {
-                Ok(
-                    Self::UpdateBaseFeeParameters(
-                        UpdateBaseFeeParametersIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            UPDATE_DYNAMIC_FEE_PARAMETERS_IX_DISCM => {
-                Ok(
-                    Self::UpdateDynamicFeeParameters(
-                        UpdateDynamicFeeParametersIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            INCREASE_ORACLE_LENGTH_IX_DISCM => {
-                Ok(
-                    Self::IncreaseOracleLength(
-                        IncreaseOracleLengthIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            INITIALIZE_PRESET_PARAMETER_IX_DISCM => {
-                Ok(
-                    Self::InitializePresetParameter(
-                        InitializePresetParameterIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
+            UPDATE_BASE_FEE_PARAMETERS_IX_DISCM => Ok(Self::UpdateBaseFeeParameters(
+                UpdateBaseFeeParametersIxArgs::deserialize(&mut reader)?,
+            )),
+            UPDATE_DYNAMIC_FEE_PARAMETERS_IX_DISCM => Ok(Self::UpdateDynamicFeeParameters(
+                UpdateDynamicFeeParametersIxArgs::deserialize(&mut reader)?,
+            )),
+            INCREASE_ORACLE_LENGTH_IX_DISCM => Ok(Self::IncreaseOracleLength(
+                IncreaseOracleLengthIxArgs::deserialize(&mut reader)?,
+            )),
+            INITIALIZE_PRESET_PARAMETER_IX_DISCM => Ok(Self::InitializePresetParameter(
+                InitializePresetParameterIxArgs::deserialize(&mut reader)?,
+            )),
             CLOSE_PRESET_PARAMETER_IX_DISCM => Ok(Self::ClosePresetParameter),
             CLOSE_PRESET_PARAMETER2_IX_DISCM => Ok(Self::ClosePresetParameter2),
             REMOVE_ALL_LIQUIDITY_IX_DISCM => Ok(Self::RemoveAllLiquidity),
-            SET_PAIR_STATUS_IX_DISCM => {
-                Ok(Self::SetPairStatus(SetPairStatusIxArgs::deserialize(&mut reader)?))
-            }
+            SET_PAIR_STATUS_IX_DISCM => Ok(Self::SetPairStatus(SetPairStatusIxArgs::deserialize(
+                &mut reader,
+            )?)),
             MIGRATE_POSITION_IX_DISCM => Ok(Self::MigratePosition),
             MIGRATE_BIN_ARRAY_IX_DISCM => Ok(Self::MigrateBinArray),
             UPDATE_FEES_AND_REWARDS_IX_DISCM => Ok(Self::UpdateFeesAndRewards),
-            WITHDRAW_INELIGIBLE_REWARD_IX_DISCM => {
-                Ok(
-                    Self::WithdrawIneligibleReward(
-                        WithdrawIneligibleRewardIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            SET_ACTIVATION_POINT_IX_DISCM => {
-                Ok(
-                    Self::SetActivationPoint(
-                        SetActivationPointIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            REMOVE_LIQUIDITY_BY_RANGE_IX_DISCM => {
-                Ok(
-                    Self::RemoveLiquidityByRange(
-                        RemoveLiquidityByRangeIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_DISCM => {
-                Ok(
-                    Self::AddLiquidityOneSidePrecise(
-                        AddLiquidityOneSidePreciseIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            GO_TO_A_BIN_IX_DISCM => {
-                Ok(Self::GoToABin(GoToABinIxArgs::deserialize(&mut reader)?))
-            }
-            SET_PRE_ACTIVATION_DURATION_IX_DISCM => {
-                Ok(
-                    Self::SetPreActivationDuration(
-                        SetPreActivationDurationIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_DISCM => {
-                Ok(
-                    Self::SetPreActivationSwapAddress(
-                        SetPreActivationSwapAddressIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            SET_PAIR_STATUS_PERMISSIONLESS_IX_DISCM => {
-                Ok(
-                    Self::SetPairStatusPermissionless(
-                        SetPairStatusPermissionlessIxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
+            WITHDRAW_INELIGIBLE_REWARD_IX_DISCM => Ok(Self::WithdrawIneligibleReward(
+                WithdrawIneligibleRewardIxArgs::deserialize(&mut reader)?,
+            )),
+            SET_ACTIVATION_POINT_IX_DISCM => Ok(Self::SetActivationPoint(
+                SetActivationPointIxArgs::deserialize(&mut reader)?,
+            )),
+            REMOVE_LIQUIDITY_BY_RANGE_IX_DISCM => Ok(Self::RemoveLiquidityByRange(
+                RemoveLiquidityByRangeIxArgs::deserialize(&mut reader)?,
+            )),
+            ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_DISCM => Ok(Self::AddLiquidityOneSidePrecise(
+                AddLiquidityOneSidePreciseIxArgs::deserialize(&mut reader)?,
+            )),
+            GO_TO_A_BIN_IX_DISCM => Ok(Self::GoToABin(GoToABinIxArgs::deserialize(&mut reader)?)),
+            SET_PRE_ACTIVATION_DURATION_IX_DISCM => Ok(Self::SetPreActivationDuration(
+                SetPreActivationDurationIxArgs::deserialize(&mut reader)?,
+            )),
+            SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_DISCM => Ok(Self::SetPreActivationSwapAddress(
+                SetPreActivationSwapAddressIxArgs::deserialize(&mut reader)?,
+            )),
+            SET_PAIR_STATUS_PERMISSIONLESS_IX_DISCM => Ok(Self::SetPairStatusPermissionless(
+                SetPairStatusPermissionlessIxArgs::deserialize(&mut reader)?,
+            )),
             INITIALIZE_TOKEN_BADGE_IX_DISCM => Ok(Self::InitializeTokenBadge),
-            CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM => {
-                Ok(Self::CreateClaimProtocolFeeOperator)
-            }
-            CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM => {
-                Ok(Self::CloseClaimProtocolFeeOperator)
-            }
-            INITIALIZE_PRESET_PARAMETER2_IX_DISCM => {
-                Ok(
-                    Self::InitializePresetParameter2(
-                        InitializePresetParameter2IxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            INITIALIZE_LB_PAIR2_IX_DISCM => {
-                Ok(
-                    Self::InitializeLbPair2(
-                        InitializeLbPair2IxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
+            CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM => Ok(Self::CreateClaimProtocolFeeOperator),
+            CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM => Ok(Self::CloseClaimProtocolFeeOperator),
+            INITIALIZE_PRESET_PARAMETER2_IX_DISCM => Ok(Self::InitializePresetParameter2(
+                InitializePresetParameter2IxArgs::deserialize(&mut reader)?,
+            )),
+            INITIALIZE_LB_PAIR2_IX_DISCM => Ok(Self::InitializeLbPair2(
+                InitializeLbPair2IxArgs::deserialize(&mut reader)?,
+            )),
             INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_DISCM => {
-                Ok(
-                    Self::InitializeCustomizablePermissionlessLbPair2(
-                        InitializeCustomizablePermissionlessLbPair2IxArgs::deserialize(
-                            &mut reader,
-                        )?,
-                    ),
-                )
+                Ok(Self::InitializeCustomizablePermissionlessLbPair2(
+                    InitializeCustomizablePermissionlessLbPair2IxArgs::deserialize(&mut reader)?,
+                ))
             }
-            CLAIM_FEE2_IX_DISCM => {
-                Ok(Self::ClaimFee2(ClaimFee2IxArgs::deserialize(&mut reader)?))
-            }
-            CLAIM_REWARD2_IX_DISCM => {
-                Ok(Self::ClaimReward2(ClaimReward2IxArgs::deserialize(&mut reader)?))
-            }
-            ADD_LIQUIDITY2_IX_DISCM => {
-                Ok(Self::AddLiquidity2(AddLiquidity2IxArgs::deserialize(&mut reader)?))
-            }
-            ADD_LIQUIDITY_BY_STRATEGY2_IX_DISCM => {
-                Ok(
-                    Self::AddLiquidityByStrategy2(
-                        AddLiquidityByStrategy2IxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_DISCM => {
-                Ok(
-                    Self::AddLiquidityOneSidePrecise2(
-                        AddLiquidityOneSidePrecise2IxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            REMOVE_LIQUIDITY2_IX_DISCM => {
-                Ok(
-                    Self::RemoveLiquidity2(
-                        RemoveLiquidity2IxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
-            REMOVE_LIQUIDITY_BY_RANGE2_IX_DISCM => {
-                Ok(
-                    Self::RemoveLiquidityByRange2(
-                        RemoveLiquidityByRange2IxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
+            CLAIM_FEE2_IX_DISCM => Ok(Self::ClaimFee2(ClaimFee2IxArgs::deserialize(&mut reader)?)),
+            CLAIM_REWARD2_IX_DISCM => Ok(Self::ClaimReward2(ClaimReward2IxArgs::deserialize(
+                &mut reader,
+            )?)),
+            ADD_LIQUIDITY2_IX_DISCM => Ok(Self::AddLiquidity2(AddLiquidity2IxArgs::deserialize(
+                &mut reader,
+            )?)),
+            ADD_LIQUIDITY_BY_STRATEGY2_IX_DISCM => Ok(Self::AddLiquidityByStrategy2(
+                AddLiquidityByStrategy2IxArgs::deserialize(&mut reader)?,
+            )),
+            ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_DISCM => Ok(Self::AddLiquidityOneSidePrecise2(
+                AddLiquidityOneSidePrecise2IxArgs::deserialize(&mut reader)?,
+            )),
+            REMOVE_LIQUIDITY2_IX_DISCM => Ok(Self::RemoveLiquidity2(
+                RemoveLiquidity2IxArgs::deserialize(&mut reader)?,
+            )),
+            REMOVE_LIQUIDITY_BY_RANGE2_IX_DISCM => Ok(Self::RemoveLiquidityByRange2(
+                RemoveLiquidityByRange2IxArgs::deserialize(&mut reader)?,
+            )),
             SWAP2_IX_DISCM => Ok(Self::Swap2(Swap2IxArgs::deserialize(&mut reader)?)),
-            SWAP_EXACT_OUT2_IX_DISCM => {
-                Ok(Self::SwapExactOut2(SwapExactOut2IxArgs::deserialize(&mut reader)?))
-            }
-            SWAP_WITH_PRICE_IMPACT2_IX_DISCM => {
-                Ok(
-                    Self::SwapWithPriceImpact2(
-                        SwapWithPriceImpact2IxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
+            SWAP_EXACT_OUT2_IX_DISCM => Ok(Self::SwapExactOut2(SwapExactOut2IxArgs::deserialize(
+                &mut reader,
+            )?)),
+            SWAP_WITH_PRICE_IMPACT2_IX_DISCM => Ok(Self::SwapWithPriceImpact2(
+                SwapWithPriceImpact2IxArgs::deserialize(&mut reader)?,
+            )),
             CLOSE_POSITION2_IX_DISCM => Ok(Self::ClosePosition2),
-            UPDATE_FEES_AND_REWARD2_IX_DISCM => {
-                Ok(
-                    Self::UpdateFeesAndReward2(
-                        UpdateFeesAndReward2IxArgs::deserialize(&mut reader)?,
-                    ),
-                )
-            }
+            UPDATE_FEES_AND_REWARD2_IX_DISCM => Ok(Self::UpdateFeesAndReward2(
+                UpdateFeesAndReward2IxArgs::deserialize(&mut reader)?,
+            )),
             CLOSE_POSITION_IF_EMPTY_IX_DISCM => Ok(Self::ClosePositionIfEmpty),
-            _ => {
-                Err(
-                    std::io::Error::new(
-                        std::io::ErrorKind::Other,
-                        format!("discm {:?} not found", maybe_discm),
-                    ),
-                )
-            }
+            _ => Err(std::io::Error::other(format!(
+                "discm {maybe_discm:?} not found"
+            ))),
         }
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
@@ -427,10 +260,7 @@ impl LbClmmProgramIx {
                 args.serialize(&mut writer)
             }
             Self::InitializeCustomizablePermissionlessLbPair(args) => {
-                writer
-                    .write_all(
-                        &INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_DISCM,
-                    )?;
+                writer.write_all(&INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_DISCM)?;
                 args.serialize(&mut writer)
             }
             Self::InitializeBinArrayBitmapExtension => {
@@ -534,12 +364,8 @@ impl LbClmmProgramIx {
                 writer.write_all(&INITIALIZE_PRESET_PARAMETER_IX_DISCM)?;
                 args.serialize(&mut writer)
             }
-            Self::ClosePresetParameter => {
-                writer.write_all(&CLOSE_PRESET_PARAMETER_IX_DISCM)
-            }
-            Self::ClosePresetParameter2 => {
-                writer.write_all(&CLOSE_PRESET_PARAMETER2_IX_DISCM)
-            }
+            Self::ClosePresetParameter => writer.write_all(&CLOSE_PRESET_PARAMETER_IX_DISCM),
+            Self::ClosePresetParameter2 => writer.write_all(&CLOSE_PRESET_PARAMETER2_IX_DISCM),
             Self::RemoveAllLiquidity => writer.write_all(&REMOVE_ALL_LIQUIDITY_IX_DISCM),
             Self::SetPairStatus(args) => {
                 writer.write_all(&SET_PAIR_STATUS_IX_DISCM)?;
@@ -547,9 +373,7 @@ impl LbClmmProgramIx {
             }
             Self::MigratePosition => writer.write_all(&MIGRATE_POSITION_IX_DISCM),
             Self::MigrateBinArray => writer.write_all(&MIGRATE_BIN_ARRAY_IX_DISCM),
-            Self::UpdateFeesAndRewards => {
-                writer.write_all(&UPDATE_FEES_AND_REWARDS_IX_DISCM)
-            }
+            Self::UpdateFeesAndRewards => writer.write_all(&UPDATE_FEES_AND_REWARDS_IX_DISCM),
             Self::WithdrawIneligibleReward(args) => {
                 writer.write_all(&WITHDRAW_INELIGIBLE_REWARD_IX_DISCM)?;
                 args.serialize(&mut writer)
@@ -582,9 +406,7 @@ impl LbClmmProgramIx {
                 writer.write_all(&SET_PAIR_STATUS_PERMISSIONLESS_IX_DISCM)?;
                 args.serialize(&mut writer)
             }
-            Self::InitializeTokenBadge => {
-                writer.write_all(&INITIALIZE_TOKEN_BADGE_IX_DISCM)
-            }
+            Self::InitializeTokenBadge => writer.write_all(&INITIALIZE_TOKEN_BADGE_IX_DISCM),
             Self::CreateClaimProtocolFeeOperator => {
                 writer.write_all(&CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM)
             }
@@ -600,10 +422,7 @@ impl LbClmmProgramIx {
                 args.serialize(&mut writer)
             }
             Self::InitializeCustomizablePermissionlessLbPair2(args) => {
-                writer
-                    .write_all(
-                        &INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_DISCM,
-                    )?;
+                writer.write_all(&INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_DISCM)?;
                 args.serialize(&mut writer)
             }
             Self::ClaimFee2(args) => {
@@ -651,9 +470,7 @@ impl LbClmmProgramIx {
                 writer.write_all(&UPDATE_FEES_AND_REWARD2_IX_DISCM)?;
                 args.serialize(&mut writer)
             }
-            Self::ClosePositionIfEmpty => {
-                writer.write_all(&CLOSE_POSITION_IF_EMPTY_IX_DISCM)
-            }
+            Self::ClosePositionIfEmpty => writer.write_all(&CLOSE_POSITION_IF_EMPTY_IX_DISCM),
         }
     }
     pub fn try_to_vec(&self) -> std::io::Result<Vec<u8>> {
@@ -829,7 +646,8 @@ impl From<[Pubkey; INITIALIZE_LB_PAIR_IX_ACCOUNTS_LEN]> for InitializeLbPairKeys
     }
 }
 impl<'info> From<InitializeLbPairAccounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_LB_PAIR_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_LB_PAIR_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializeLbPairAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -850,7 +668,8 @@ for [AccountInfo<'info>; INITIALIZE_LB_PAIR_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; INITIALIZE_LB_PAIR_IX_ACCOUNTS_LEN]>
-for InitializeLbPairAccounts<'me, 'info> {
+    for InitializeLbPairAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; INITIALIZE_LB_PAIR_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -891,11 +710,9 @@ impl InitializeLbPairIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_LB_PAIR_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_LB_PAIR_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_LB_PAIR_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -969,7 +786,10 @@ pub fn initialize_lb_pair_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.token_mint_x.key, keys.token_mint_x),
         (*accounts.token_mint_y.key, keys.token_mint_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -1064,8 +884,7 @@ pub struct InitializePermissionLbPairKeys {
     pub event_authority: Pubkey,
     pub program: Pubkey,
 }
-impl From<InitializePermissionLbPairAccounts<'_, '_>>
-for InitializePermissionLbPairKeys {
+impl From<InitializePermissionLbPairAccounts<'_, '_>> for InitializePermissionLbPairKeys {
     fn from(accounts: InitializePermissionLbPairAccounts) -> Self {
         Self {
             base: *accounts.base.key,
@@ -1089,7 +908,8 @@ for InitializePermissionLbPairKeys {
     }
 }
 impl From<InitializePermissionLbPairKeys>
-for [AccountMeta; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN]
+{
     fn from(keys: InitializePermissionLbPairKeys) -> Self {
         [
             AccountMeta {
@@ -1181,7 +1001,8 @@ for [AccountMeta; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN]>
-for InitializePermissionLbPairKeys {
+    for InitializePermissionLbPairKeys
+{
     fn from(pubkeys: [Pubkey; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             base: pubkeys[0],
@@ -1205,7 +1026,8 @@ for InitializePermissionLbPairKeys {
     }
 }
 impl<'info> From<InitializePermissionLbPairAccounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializePermissionLbPairAccounts<'_, 'info>) -> Self {
         [
             accounts.base.clone(),
@@ -1228,14 +1050,10 @@ for [AccountInfo<'info>; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN]>
-for InitializePermissionLbPairAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN]>
+    for InitializePermissionLbPairAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             base: &arr[0],
             lb_pair: &arr[1],
@@ -1257,16 +1075,7 @@ for InitializePermissionLbPairAccounts<'me, 'info> {
         }
     }
 }
-pub const INITIALIZE_PERMISSION_LB_PAIR_IX_DISCM: [u8; 8] = [
-    108,
-    102,
-    213,
-    85,
-    251,
-    3,
-    53,
-    21,
-];
+pub const INITIALIZE_PERMISSION_LB_PAIR_IX_DISCM: [u8; 8] = [108, 102, 213, 85, 251, 3, 53, 21];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct InitializePermissionLbPairIxArgs {
@@ -1286,16 +1095,16 @@ impl InitializePermissionLbPairIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_PERMISSION_LB_PAIR_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_PERMISSION_LB_PAIR_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_PERMISSION_LB_PAIR_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(InitializePermissionLbPairIxArgs::deserialize(&mut reader)?))
+        Ok(Self(InitializePermissionLbPairIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&INITIALIZE_PERMISSION_LB_PAIR_IX_DISCM)?;
@@ -1312,8 +1121,7 @@ pub fn initialize_permission_lb_pair_ix_with_program_id(
     keys: InitializePermissionLbPairKeys,
     args: InitializePermissionLbPairIxArgs,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; INITIALIZE_PERMISSION_LB_PAIR_IX_ACCOUNTS_LEN] = keys.into();
     let data: InitializePermissionLbPairIxData = args.into();
     Ok(Instruction {
         program_id,
@@ -1357,12 +1165,7 @@ pub fn initialize_permission_lb_pair_invoke_signed(
     args: InitializePermissionLbPairIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    initialize_permission_lb_pair_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    initialize_permission_lb_pair_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn initialize_permission_lb_pair_verify_account_keys(
     accounts: InitializePermissionLbPairAccounts<'_, '_>,
@@ -1371,7 +1174,10 @@ pub fn initialize_permission_lb_pair_verify_account_keys(
     for (actual, expected) in [
         (*accounts.base.key, keys.base),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.token_mint_x.key, keys.token_mint_x),
         (*accounts.token_mint_y.key, keys.token_mint_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -1463,7 +1269,8 @@ pub struct InitializeCustomizablePermissionlessLbPairKeys {
     pub program: Pubkey,
 }
 impl From<InitializeCustomizablePermissionlessLbPairAccounts<'_, '_>>
-for InitializeCustomizablePermissionlessLbPairKeys {
+    for InitializeCustomizablePermissionlessLbPairKeys
+{
     fn from(accounts: InitializeCustomizablePermissionlessLbPairAccounts) -> Self {
         Self {
             lb_pair: *accounts.lb_pair.key,
@@ -1484,7 +1291,8 @@ for InitializeCustomizablePermissionlessLbPairKeys {
     }
 }
 impl From<InitializeCustomizablePermissionlessLbPairKeys>
-for [AccountMeta; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN]
+{
     fn from(keys: InitializeCustomizablePermissionlessLbPairKeys) -> Self {
         [
             AccountMeta {
@@ -1561,7 +1369,8 @@ for [AccountMeta; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN
     }
 }
 impl From<[Pubkey; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN]>
-for InitializeCustomizablePermissionlessLbPairKeys {
+    for InitializeCustomizablePermissionlessLbPairKeys
+{
     fn from(
         pubkeys: [Pubkey; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN],
     ) -> Self {
@@ -1584,12 +1393,9 @@ for InitializeCustomizablePermissionlessLbPairKeys {
     }
 }
 impl<'info> From<InitializeCustomizablePermissionlessLbPairAccounts<'_, 'info>>
-for [AccountInfo<
-    'info,
->; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN] {
-    fn from(
-        accounts: InitializeCustomizablePermissionlessLbPairAccounts<'_, 'info>,
-    ) -> Self {
+    for [AccountInfo<'info>; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN]
+{
+    fn from(accounts: InitializeCustomizablePermissionlessLbPairAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
             accounts.bin_array_bitmap_extension.clone(),
@@ -1608,18 +1414,13 @@ for [AccountInfo<
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<
-    &'me [AccountInfo<
-        'info,
-    >; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN],
-> for InitializeCustomizablePermissionlessLbPairAccounts<'me, 'info> {
+impl<'me, 'info>
+    From<&'me [AccountInfo<'info>; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN]>
+    for InitializeCustomizablePermissionlessLbPairAccounts<'me, 'info>
+{
     fn from(
-        arr: &'me [AccountInfo<
-            'info,
-        >; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN],
+        arr: &'me [AccountInfo<'info>;
+                 INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN],
     ) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -1639,16 +1440,8 @@ impl<
         }
     }
 }
-pub const INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_DISCM: [u8; 8] = [
-    46,
-    39,
-    41,
-    135,
-    111,
-    183,
-    200,
-    64,
-];
+pub const INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_DISCM: [u8; 8] =
+    [46, 39, 41, 135, 111, 183, 200, 64];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct InitializeCustomizablePermissionlessLbPairIxArgs {
@@ -1659,7 +1452,8 @@ pub struct InitializeCustomizablePermissionlessLbPairIxData(
     pub InitializeCustomizablePermissionlessLbPairIxArgs,
 );
 impl From<InitializeCustomizablePermissionlessLbPairIxArgs>
-for InitializeCustomizablePermissionlessLbPairIxData {
+    for InitializeCustomizablePermissionlessLbPairIxData
+{
     fn from(args: InitializeCustomizablePermissionlessLbPairIxArgs) -> Self {
         Self(args)
     }
@@ -1671,23 +1465,16 @@ impl InitializeCustomizablePermissionlessLbPairIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_DISCM,
-                        maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(
-            Self(
-                InitializeCustomizablePermissionlessLbPairIxArgs::deserialize(
-                    &mut reader,
-                )?,
-            ),
-        )
+        Ok(Self(
+            InitializeCustomizablePermissionlessLbPairIxArgs::deserialize(&mut reader)?,
+        ))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_DISCM)?;
@@ -1704,8 +1491,8 @@ pub fn initialize_customizable_permissionless_lb_pair_ix_with_program_id(
     keys: InitializeCustomizablePermissionlessLbPairKeys,
     args: InitializeCustomizablePermissionlessLbPairIxArgs,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR_IX_ACCOUNTS_LEN] =
+        keys.into();
     let data: InitializeCustomizablePermissionlessLbPairIxData = args.into();
     Ok(Instruction {
         program_id,
@@ -1717,11 +1504,7 @@ pub fn initialize_customizable_permissionless_lb_pair_ix(
     keys: InitializeCustomizablePermissionlessLbPairKeys,
     args: InitializeCustomizablePermissionlessLbPairIxArgs,
 ) -> std::io::Result<Instruction> {
-    initialize_customizable_permissionless_lb_pair_ix_with_program_id(
-        crate::ID,
-        keys,
-        args,
-    )
+    initialize_customizable_permissionless_lb_pair_ix_with_program_id(crate::ID, keys, args)
 }
 pub fn initialize_customizable_permissionless_lb_pair_invoke_with_program_id(
     program_id: Pubkey,
@@ -1729,22 +1512,15 @@ pub fn initialize_customizable_permissionless_lb_pair_invoke_with_program_id(
     args: InitializeCustomizablePermissionlessLbPairIxArgs,
 ) -> ProgramResult {
     let keys: InitializeCustomizablePermissionlessLbPairKeys = accounts.into();
-    let ix = initialize_customizable_permissionless_lb_pair_ix_with_program_id(
-        program_id,
-        keys,
-        args,
-    )?;
+    let ix =
+        initialize_customizable_permissionless_lb_pair_ix_with_program_id(program_id, keys, args)?;
     invoke_instruction(&ix, accounts)
 }
 pub fn initialize_customizable_permissionless_lb_pair_invoke(
     accounts: InitializeCustomizablePermissionlessLbPairAccounts<'_, '_>,
     args: InitializeCustomizablePermissionlessLbPairIxArgs,
 ) -> ProgramResult {
-    initialize_customizable_permissionless_lb_pair_invoke_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-    )
+    initialize_customizable_permissionless_lb_pair_invoke_with_program_id(crate::ID, accounts, args)
 }
 pub fn initialize_customizable_permissionless_lb_pair_invoke_signed_with_program_id(
     program_id: Pubkey,
@@ -1753,11 +1529,8 @@ pub fn initialize_customizable_permissionless_lb_pair_invoke_signed_with_program
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
     let keys: InitializeCustomizablePermissionlessLbPairKeys = accounts.into();
-    let ix = initialize_customizable_permissionless_lb_pair_ix_with_program_id(
-        program_id,
-        keys,
-        args,
-    )?;
+    let ix =
+        initialize_customizable_permissionless_lb_pair_ix_with_program_id(program_id, keys, args)?;
     invoke_instruction_signed(&ix, accounts, seeds)
 }
 pub fn initialize_customizable_permissionless_lb_pair_invoke_signed(
@@ -1778,7 +1551,10 @@ pub fn initialize_customizable_permissionless_lb_pair_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.token_mint_x.key, keys.token_mint_x),
         (*accounts.token_mint_y.key, keys.token_mint_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -1798,10 +1574,7 @@ pub fn initialize_customizable_permissionless_lb_pair_verify_account_keys(
     }
     Ok(())
 }
-pub fn initialize_customizable_permissionless_lb_pair_verify_writable_privileges<
-    'me,
-    'info,
->(
+pub fn initialize_customizable_permissionless_lb_pair_verify_writable_privileges<'me, 'info>(
     accounts: InitializeCustomizablePermissionlessLbPairAccounts<'me, 'info>,
 ) -> Result<(), (&'me AccountInfo<'info>, ProgramError)> {
     for should_be_writable in [
@@ -1818,10 +1591,7 @@ pub fn initialize_customizable_permissionless_lb_pair_verify_writable_privileges
     }
     Ok(())
 }
-pub fn initialize_customizable_permissionless_lb_pair_verify_signer_privileges<
-    'me,
-    'info,
->(
+pub fn initialize_customizable_permissionless_lb_pair_verify_signer_privileges<'me, 'info>(
     accounts: InitializeCustomizablePermissionlessLbPairAccounts<'me, 'info>,
 ) -> Result<(), (&'me AccountInfo<'info>, ProgramError)> {
     for should_be_signer in [accounts.funder] {
@@ -1831,10 +1601,7 @@ pub fn initialize_customizable_permissionless_lb_pair_verify_signer_privileges<
     }
     Ok(())
 }
-pub fn initialize_customizable_permissionless_lb_pair_verify_account_privileges<
-    'me,
-    'info,
->(
+pub fn initialize_customizable_permissionless_lb_pair_verify_account_privileges<'me, 'info>(
     accounts: InitializeCustomizablePermissionlessLbPairAccounts<'me, 'info>,
 ) -> Result<(), (&'me AccountInfo<'info>, ProgramError)> {
     initialize_customizable_permissionless_lb_pair_verify_writable_privileges(accounts)?;
@@ -1859,7 +1626,8 @@ pub struct InitializeBinArrayBitmapExtensionKeys {
     pub rent: Pubkey,
 }
 impl From<InitializeBinArrayBitmapExtensionAccounts<'_, '_>>
-for InitializeBinArrayBitmapExtensionKeys {
+    for InitializeBinArrayBitmapExtensionKeys
+{
     fn from(accounts: InitializeBinArrayBitmapExtensionAccounts) -> Self {
         Self {
             lb_pair: *accounts.lb_pair.key,
@@ -1871,7 +1639,8 @@ for InitializeBinArrayBitmapExtensionKeys {
     }
 }
 impl From<InitializeBinArrayBitmapExtensionKeys>
-for [AccountMeta; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN]
+{
     fn from(keys: InitializeBinArrayBitmapExtensionKeys) -> Self {
         [
             AccountMeta {
@@ -1903,10 +1672,9 @@ for [AccountMeta; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN]>
-for InitializeBinArrayBitmapExtensionKeys {
-    fn from(
-        pubkeys: [Pubkey; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for InitializeBinArrayBitmapExtensionKeys
+{
+    fn from(pubkeys: [Pubkey; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: pubkeys[0],
             bin_array_bitmap_extension: pubkeys[1],
@@ -1917,7 +1685,8 @@ for InitializeBinArrayBitmapExtensionKeys {
     }
 }
 impl<'info> From<InitializeBinArrayBitmapExtensionAccounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializeBinArrayBitmapExtensionAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -1928,15 +1697,12 @@ for [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN] 
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN]>
-for InitializeBinArrayBitmapExtensionAccounts<'me, 'info> {
+impl<'me, 'info>
+    From<&'me [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN]>
+    for InitializeBinArrayBitmapExtensionAccounts<'me, 'info>
+{
     fn from(
-        arr: &'me [AccountInfo<
-            'info,
-        >; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN],
+        arr: &'me [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN],
     ) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -1947,16 +1713,8 @@ for InitializeBinArrayBitmapExtensionAccounts<'me, 'info> {
         }
     }
 }
-pub const INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_DISCM: [u8; 8] = [
-    47,
-    157,
-    226,
-    180,
-    12,
-    240,
-    33,
-    71,
-];
+pub const INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_DISCM: [u8; 8] =
+    [47, 157, 226, 180, 12, 240, 33, 71];
 #[derive(Clone, Debug, PartialEq)]
 pub struct InitializeBinArrayBitmapExtensionIxData;
 impl InitializeBinArrayBitmapExtensionIxData {
@@ -1966,11 +1724,9 @@ impl InitializeBinArrayBitmapExtensionIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -1990,8 +1746,7 @@ pub fn initialize_bin_array_bitmap_extension_ix_with_program_id(
     program_id: Pubkey,
     keys: InitializeBinArrayBitmapExtensionKeys,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; INITIALIZE_BIN_ARRAY_BITMAP_EXTENSION_IX_ACCOUNTS_LEN] = keys.into();
     Ok(Instruction {
         program_id,
         accounts: Vec::from(metas),
@@ -2029,11 +1784,7 @@ pub fn initialize_bin_array_bitmap_extension_invoke_signed(
     accounts: InitializeBinArrayBitmapExtensionAccounts<'_, '_>,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    initialize_bin_array_bitmap_extension_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        seeds,
-    )
+    initialize_bin_array_bitmap_extension_invoke_signed_with_program_id(crate::ID, accounts, seeds)
 }
 pub fn initialize_bin_array_bitmap_extension_verify_account_keys(
     accounts: InitializeBinArrayBitmapExtensionAccounts<'_, '_>,
@@ -2041,7 +1792,10 @@ pub fn initialize_bin_array_bitmap_extension_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.funder.key, keys.funder),
         (*accounts.system_program.key, keys.system_program),
         (*accounts.rent.key, keys.rent),
@@ -2104,8 +1858,7 @@ impl From<InitializeBinArrayAccounts<'_, '_>> for InitializeBinArrayKeys {
         }
     }
 }
-impl From<InitializeBinArrayKeys>
-for [AccountMeta; INITIALIZE_BIN_ARRAY_IX_ACCOUNTS_LEN] {
+impl From<InitializeBinArrayKeys> for [AccountMeta; INITIALIZE_BIN_ARRAY_IX_ACCOUNTS_LEN] {
     fn from(keys: InitializeBinArrayKeys) -> Self {
         [
             AccountMeta {
@@ -2142,7 +1895,8 @@ impl From<[Pubkey; INITIALIZE_BIN_ARRAY_IX_ACCOUNTS_LEN]> for InitializeBinArray
     }
 }
 impl<'info> From<InitializeBinArrayAccounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializeBinArrayAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -2153,10 +1907,9 @@ for [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_IX_ACCOUNTS_LEN]>
-for InitializeBinArrayAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for InitializeBinArrayAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; INITIALIZE_BIN_ARRAY_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             bin_array: &arr[1],
@@ -2185,11 +1938,9 @@ impl InitializeBinArrayIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_BIN_ARRAY_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_BIN_ARRAY_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_BIN_ARRAY_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -2470,7 +2221,8 @@ impl From<[Pubkey; ADD_LIQUIDITY_IX_ACCOUNTS_LEN]> for AddLiquidityKeys {
     }
 }
 impl<'info> From<AddLiquidityAccounts<'_, 'info>>
-for [AccountInfo<'info>; ADD_LIQUIDITY_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; ADD_LIQUIDITY_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: AddLiquidityAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -2493,7 +2245,8 @@ for [AccountInfo<'info>; ADD_LIQUIDITY_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_IX_ACCOUNTS_LEN]>
-for AddLiquidityAccounts<'me, 'info> {
+    for AddLiquidityAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
@@ -2535,11 +2288,9 @@ impl AddLiquidityIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != ADD_LIQUIDITY_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        ADD_LIQUIDITY_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {ADD_LIQUIDITY_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -2614,7 +2365,10 @@ pub fn add_liquidity_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token_x.key, keys.user_token_x),
         (*accounts.user_token_y.key, keys.user_token_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -2733,8 +2487,7 @@ impl From<AddLiquidityByWeightAccounts<'_, '_>> for AddLiquidityByWeightKeys {
         }
     }
 }
-impl From<AddLiquidityByWeightKeys>
-for [AccountMeta; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN] {
+impl From<AddLiquidityByWeightKeys> for [AccountMeta; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN] {
     fn from(keys: AddLiquidityByWeightKeys) -> Self {
         [
             AccountMeta {
@@ -2820,8 +2573,7 @@ for [AccountMeta; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN]>
-for AddLiquidityByWeightKeys {
+impl From<[Pubkey; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN]> for AddLiquidityByWeightKeys {
     fn from(pubkeys: [Pubkey; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
@@ -2844,7 +2596,8 @@ for AddLiquidityByWeightKeys {
     }
 }
 impl<'info> From<AddLiquidityByWeightAccounts<'_, 'info>>
-for [AccountInfo<'info>; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: AddLiquidityByWeightAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -2867,10 +2620,9 @@ for [AccountInfo<'info>; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN]>
-for AddLiquidityByWeightAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for AddLiquidityByWeightAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_WEIGHT_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
             lb_pair: &arr[1],
@@ -2891,16 +2643,7 @@ for AddLiquidityByWeightAccounts<'me, 'info> {
         }
     }
 }
-pub const ADD_LIQUIDITY_BY_WEIGHT_IX_DISCM: [u8; 8] = [
-    28,
-    140,
-    238,
-    99,
-    231,
-    162,
-    21,
-    149,
-];
+pub const ADD_LIQUIDITY_BY_WEIGHT_IX_DISCM: [u8; 8] = [28, 140, 238, 99, 231, 162, 21, 149];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AddLiquidityByWeightIxArgs {
@@ -2920,11 +2663,9 @@ impl AddLiquidityByWeightIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != ADD_LIQUIDITY_BY_WEIGHT_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        ADD_LIQUIDITY_BY_WEIGHT_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {ADD_LIQUIDITY_BY_WEIGHT_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -2990,12 +2731,7 @@ pub fn add_liquidity_by_weight_invoke_signed(
     args: AddLiquidityByWeightIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    add_liquidity_by_weight_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    add_liquidity_by_weight_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn add_liquidity_by_weight_verify_account_keys(
     accounts: AddLiquidityByWeightAccounts<'_, '_>,
@@ -3004,7 +2740,10 @@ pub fn add_liquidity_by_weight_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token_x.key, keys.user_token_x),
         (*accounts.user_token_y.key, keys.user_token_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -3123,8 +2862,7 @@ impl From<AddLiquidityByStrategyAccounts<'_, '_>> for AddLiquidityByStrategyKeys
         }
     }
 }
-impl From<AddLiquidityByStrategyKeys>
-for [AccountMeta; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN] {
+impl From<AddLiquidityByStrategyKeys> for [AccountMeta; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN] {
     fn from(keys: AddLiquidityByStrategyKeys) -> Self {
         [
             AccountMeta {
@@ -3210,8 +2948,7 @@ for [AccountMeta; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN]>
-for AddLiquidityByStrategyKeys {
+impl From<[Pubkey; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN]> for AddLiquidityByStrategyKeys {
     fn from(pubkeys: [Pubkey; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
@@ -3234,7 +2971,8 @@ for AddLiquidityByStrategyKeys {
     }
 }
 impl<'info> From<AddLiquidityByStrategyAccounts<'_, 'info>>
-for [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: AddLiquidityByStrategyAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -3256,14 +2994,10 @@ for [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN]>
-for AddLiquidityByStrategyAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN]>
+    for AddLiquidityByStrategyAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
             lb_pair: &arr[1],
@@ -3284,16 +3018,7 @@ for AddLiquidityByStrategyAccounts<'me, 'info> {
         }
     }
 }
-pub const ADD_LIQUIDITY_BY_STRATEGY_IX_DISCM: [u8; 8] = [
-    7,
-    3,
-    150,
-    127,
-    148,
-    40,
-    61,
-    200,
-];
+pub const ADD_LIQUIDITY_BY_STRATEGY_IX_DISCM: [u8; 8] = [7, 3, 150, 127, 148, 40, 61, 200];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AddLiquidityByStrategyIxArgs {
@@ -3313,16 +3038,16 @@ impl AddLiquidityByStrategyIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != ADD_LIQUIDITY_BY_STRATEGY_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        ADD_LIQUIDITY_BY_STRATEGY_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {ADD_LIQUIDITY_BY_STRATEGY_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(AddLiquidityByStrategyIxArgs::deserialize(&mut reader)?))
+        Ok(Self(AddLiquidityByStrategyIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&ADD_LIQUIDITY_BY_STRATEGY_IX_DISCM)?;
@@ -3383,12 +3108,7 @@ pub fn add_liquidity_by_strategy_invoke_signed(
     args: AddLiquidityByStrategyIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    add_liquidity_by_strategy_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    add_liquidity_by_strategy_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn add_liquidity_by_strategy_verify_account_keys(
     accounts: AddLiquidityByStrategyAccounts<'_, '_>,
@@ -3397,7 +3117,10 @@ pub fn add_liquidity_by_strategy_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token_x.key, keys.user_token_x),
         (*accounts.user_token_y.key, keys.user_token_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -3486,8 +3209,7 @@ pub struct AddLiquidityByStrategyOneSideKeys {
     pub event_authority: Pubkey,
     pub program: Pubkey,
 }
-impl From<AddLiquidityByStrategyOneSideAccounts<'_, '_>>
-for AddLiquidityByStrategyOneSideKeys {
+impl From<AddLiquidityByStrategyOneSideAccounts<'_, '_>> for AddLiquidityByStrategyOneSideKeys {
     fn from(accounts: AddLiquidityByStrategyOneSideAccounts) -> Self {
         Self {
             position: *accounts.position.key,
@@ -3506,7 +3228,8 @@ for AddLiquidityByStrategyOneSideKeys {
     }
 }
 impl From<AddLiquidityByStrategyOneSideKeys>
-for [AccountMeta; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN]
+{
     fn from(keys: AddLiquidityByStrategyOneSideKeys) -> Self {
         [
             AccountMeta {
@@ -3573,10 +3296,9 @@ for [AccountMeta; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN]>
-for AddLiquidityByStrategyOneSideKeys {
-    fn from(
-        pubkeys: [Pubkey; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for AddLiquidityByStrategyOneSideKeys
+{
+    fn from(pubkeys: [Pubkey; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
             lb_pair: pubkeys[1],
@@ -3594,7 +3316,8 @@ for AddLiquidityByStrategyOneSideKeys {
     }
 }
 impl<'info> From<AddLiquidityByStrategyOneSideAccounts<'_, 'info>>
-for [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: AddLiquidityByStrategyOneSideAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -3612,15 +3335,11 @@ for [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN]>
-for AddLiquidityByStrategyOneSideAccounts<'me, 'info> {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN]>
+    for AddLiquidityByStrategyOneSideAccounts<'me, 'info>
+{
     fn from(
-        arr: &'me [AccountInfo<
-            'info,
-        >; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN],
+        arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN],
     ) -> Self {
         Self {
             position: &arr[0],
@@ -3638,16 +3357,8 @@ for AddLiquidityByStrategyOneSideAccounts<'me, 'info> {
         }
     }
 }
-pub const ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_DISCM: [u8; 8] = [
-    41,
-    5,
-    238,
-    175,
-    100,
-    225,
-    6,
-    205,
-];
+pub const ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_DISCM: [u8; 8] =
+    [41, 5, 238, 175, 100, 225, 6, 205];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AddLiquidityByStrategyOneSideIxArgs {
@@ -3667,16 +3378,16 @@ impl AddLiquidityByStrategyOneSideIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(AddLiquidityByStrategyOneSideIxArgs::deserialize(&mut reader)?))
+        Ok(Self(AddLiquidityByStrategyOneSideIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_DISCM)?;
@@ -3693,8 +3404,7 @@ pub fn add_liquidity_by_strategy_one_side_ix_with_program_id(
     keys: AddLiquidityByStrategyOneSideKeys,
     args: AddLiquidityByStrategyOneSideIxArgs,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; ADD_LIQUIDITY_BY_STRATEGY_ONE_SIDE_IX_ACCOUNTS_LEN] = keys.into();
     let data: AddLiquidityByStrategyOneSideIxData = args.into();
     Ok(Instruction {
         program_id,
@@ -3714,11 +3424,7 @@ pub fn add_liquidity_by_strategy_one_side_invoke_with_program_id(
     args: AddLiquidityByStrategyOneSideIxArgs,
 ) -> ProgramResult {
     let keys: AddLiquidityByStrategyOneSideKeys = accounts.into();
-    let ix = add_liquidity_by_strategy_one_side_ix_with_program_id(
-        program_id,
-        keys,
-        args,
-    )?;
+    let ix = add_liquidity_by_strategy_one_side_ix_with_program_id(program_id, keys, args)?;
     invoke_instruction(&ix, accounts)
 }
 pub fn add_liquidity_by_strategy_one_side_invoke(
@@ -3734,11 +3440,7 @@ pub fn add_liquidity_by_strategy_one_side_invoke_signed_with_program_id(
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
     let keys: AddLiquidityByStrategyOneSideKeys = accounts.into();
-    let ix = add_liquidity_by_strategy_one_side_ix_with_program_id(
-        program_id,
-        keys,
-        args,
-    )?;
+    let ix = add_liquidity_by_strategy_one_side_ix_with_program_id(program_id, keys, args)?;
     invoke_instruction_signed(&ix, accounts, seeds)
 }
 pub fn add_liquidity_by_strategy_one_side_invoke_signed(
@@ -3760,7 +3462,10 @@ pub fn add_liquidity_by_strategy_one_side_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token.key, keys.user_token),
         (*accounts.reserve.key, keys.reserve),
         (*accounts.token_mint.key, keys.token_mint),
@@ -3861,8 +3566,7 @@ impl From<AddLiquidityOneSideAccounts<'_, '_>> for AddLiquidityOneSideKeys {
         }
     }
 }
-impl From<AddLiquidityOneSideKeys>
-for [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_IX_ACCOUNTS_LEN] {
+impl From<AddLiquidityOneSideKeys> for [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_IX_ACCOUNTS_LEN] {
     fn from(keys: AddLiquidityOneSideKeys) -> Self {
         [
             AccountMeta {
@@ -3947,7 +3651,8 @@ impl From<[Pubkey; ADD_LIQUIDITY_ONE_SIDE_IX_ACCOUNTS_LEN]> for AddLiquidityOneS
     }
 }
 impl<'info> From<AddLiquidityOneSideAccounts<'_, 'info>>
-for [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: AddLiquidityOneSideAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -3966,10 +3671,9 @@ for [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_IX_ACCOUNTS_LEN]>
-for AddLiquidityOneSideAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for AddLiquidityOneSideAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
             lb_pair: &arr[1],
@@ -3986,16 +3690,7 @@ for AddLiquidityOneSideAccounts<'me, 'info> {
         }
     }
 }
-pub const ADD_LIQUIDITY_ONE_SIDE_IX_DISCM: [u8; 8] = [
-    94,
-    155,
-    103,
-    151,
-    70,
-    95,
-    220,
-    165,
-];
+pub const ADD_LIQUIDITY_ONE_SIDE_IX_DISCM: [u8; 8] = [94, 155, 103, 151, 70, 95, 220, 165];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AddLiquidityOneSideIxArgs {
@@ -4015,11 +3710,9 @@ impl AddLiquidityOneSideIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != ADD_LIQUIDITY_ONE_SIDE_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        ADD_LIQUIDITY_ONE_SIDE_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {ADD_LIQUIDITY_ONE_SIDE_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -4085,12 +3778,7 @@ pub fn add_liquidity_one_side_invoke_signed(
     args: AddLiquidityOneSideIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    add_liquidity_one_side_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    add_liquidity_one_side_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn add_liquidity_one_side_verify_account_keys(
     accounts: AddLiquidityOneSideAccounts<'_, '_>,
@@ -4099,7 +3787,10 @@ pub fn add_liquidity_one_side_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token.key, keys.user_token),
         (*accounts.reserve.key, keys.reserve),
         (*accounts.token_mint.key, keys.token_mint),
@@ -4321,7 +4012,8 @@ impl From<[Pubkey; REMOVE_LIQUIDITY_IX_ACCOUNTS_LEN]> for RemoveLiquidityKeys {
     }
 }
 impl<'info> From<RemoveLiquidityAccounts<'_, 'info>>
-for [AccountInfo<'info>; REMOVE_LIQUIDITY_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; REMOVE_LIQUIDITY_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: RemoveLiquidityAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -4344,7 +4036,8 @@ for [AccountInfo<'info>; REMOVE_LIQUIDITY_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; REMOVE_LIQUIDITY_IX_ACCOUNTS_LEN]>
-for RemoveLiquidityAccounts<'me, 'info> {
+    for RemoveLiquidityAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; REMOVE_LIQUIDITY_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
@@ -4386,11 +4079,9 @@ impl RemoveLiquidityIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != REMOVE_LIQUIDITY_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        REMOVE_LIQUIDITY_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {REMOVE_LIQUIDITY_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -4465,7 +4156,10 @@ pub fn remove_liquidity_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token_x.key, keys.user_token_x),
         (*accounts.user_token_y.key, keys.user_token_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -4560,8 +4254,7 @@ impl From<InitializePositionAccounts<'_, '_>> for InitializePositionKeys {
         }
     }
 }
-impl From<InitializePositionKeys>
-for [AccountMeta; INITIALIZE_POSITION_IX_ACCOUNTS_LEN] {
+impl From<InitializePositionKeys> for [AccountMeta; INITIALIZE_POSITION_IX_ACCOUNTS_LEN] {
     fn from(keys: InitializePositionKeys) -> Self {
         [
             AccountMeta {
@@ -4622,7 +4315,8 @@ impl From<[Pubkey; INITIALIZE_POSITION_IX_ACCOUNTS_LEN]> for InitializePositionK
     }
 }
 impl<'info> From<InitializePositionAccounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_POSITION_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_POSITION_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializePositionAccounts<'_, 'info>) -> Self {
         [
             accounts.payer.clone(),
@@ -4637,10 +4331,9 @@ for [AccountInfo<'info>; INITIALIZE_POSITION_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; INITIALIZE_POSITION_IX_ACCOUNTS_LEN]>
-for InitializePositionAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; INITIALIZE_POSITION_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for InitializePositionAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; INITIALIZE_POSITION_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             payer: &arr[0],
             position: &arr[1],
@@ -4674,11 +4367,9 @@ impl InitializePositionIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_POSITION_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_POSITION_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_POSITION_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -4833,8 +4524,7 @@ impl From<InitializePositionPdaAccounts<'_, '_>> for InitializePositionPdaKeys {
         }
     }
 }
-impl From<InitializePositionPdaKeys>
-for [AccountMeta; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN] {
+impl From<InitializePositionPdaKeys> for [AccountMeta; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN] {
     fn from(keys: InitializePositionPdaKeys) -> Self {
         [
             AccountMeta {
@@ -4885,8 +4575,7 @@ for [AccountMeta; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN]>
-for InitializePositionPdaKeys {
+impl From<[Pubkey; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN]> for InitializePositionPdaKeys {
     fn from(pubkeys: [Pubkey; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             payer: pubkeys[0],
@@ -4902,7 +4591,8 @@ for InitializePositionPdaKeys {
     }
 }
 impl<'info> From<InitializePositionPdaAccounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializePositionPdaAccounts<'_, 'info>) -> Self {
         [
             accounts.payer.clone(),
@@ -4918,10 +4608,9 @@ for [AccountInfo<'info>; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN]>
-for InitializePositionPdaAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for InitializePositionPdaAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; INITIALIZE_POSITION_PDA_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             payer: &arr[0],
             base: &arr[1],
@@ -4935,16 +4624,7 @@ for InitializePositionPdaAccounts<'me, 'info> {
         }
     }
 }
-pub const INITIALIZE_POSITION_PDA_IX_DISCM: [u8; 8] = [
-    46,
-    82,
-    125,
-    146,
-    85,
-    141,
-    228,
-    153,
-];
+pub const INITIALIZE_POSITION_PDA_IX_DISCM: [u8; 8] = [46, 82, 125, 146, 85, 141, 228, 153];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct InitializePositionPdaIxArgs {
@@ -4965,11 +4645,9 @@ impl InitializePositionPdaIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_POSITION_PDA_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_POSITION_PDA_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_POSITION_PDA_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -5035,12 +4713,7 @@ pub fn initialize_position_pda_invoke_signed(
     args: InitializePositionPdaIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    initialize_position_pda_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    initialize_position_pda_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn initialize_position_pda_verify_account_keys(
     accounts: InitializePositionPdaAccounts<'_, '_>,
@@ -5119,8 +4792,7 @@ pub struct InitializePositionByOperatorKeys {
     pub event_authority: Pubkey,
     pub program: Pubkey,
 }
-impl From<InitializePositionByOperatorAccounts<'_, '_>>
-for InitializePositionByOperatorKeys {
+impl From<InitializePositionByOperatorAccounts<'_, '_>> for InitializePositionByOperatorKeys {
     fn from(accounts: InitializePositionByOperatorAccounts) -> Self {
         Self {
             payer: *accounts.payer.key,
@@ -5138,7 +4810,8 @@ for InitializePositionByOperatorKeys {
     }
 }
 impl From<InitializePositionByOperatorKeys>
-for [AccountMeta; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN]
+{
     fn from(keys: InitializePositionByOperatorKeys) -> Self {
         [
             AccountMeta {
@@ -5200,7 +4873,8 @@ for [AccountMeta; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN]>
-for InitializePositionByOperatorKeys {
+    for InitializePositionByOperatorKeys
+{
     fn from(pubkeys: [Pubkey; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             payer: pubkeys[0],
@@ -5218,7 +4892,8 @@ for InitializePositionByOperatorKeys {
     }
 }
 impl<'info> From<InitializePositionByOperatorAccounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializePositionByOperatorAccounts<'_, 'info>) -> Self {
         [
             accounts.payer.clone(),
@@ -5235,11 +4910,9 @@ for [AccountInfo<'info>; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN]>
-for InitializePositionByOperatorAccounts<'me, 'info> {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN]>
+    for InitializePositionByOperatorAccounts<'me, 'info>
+{
     fn from(
         arr: &'me [AccountInfo<'info>; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN],
     ) -> Self {
@@ -5258,16 +4931,8 @@ for InitializePositionByOperatorAccounts<'me, 'info> {
         }
     }
 }
-pub const INITIALIZE_POSITION_BY_OPERATOR_IX_DISCM: [u8; 8] = [
-    251,
-    189,
-    190,
-    244,
-    117,
-    254,
-    35,
-    148,
-];
+pub const INITIALIZE_POSITION_BY_OPERATOR_IX_DISCM: [u8; 8] =
+    [251, 189, 190, 244, 117, 254, 35, 148];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct InitializePositionByOperatorIxArgs {
@@ -5290,16 +4955,16 @@ impl InitializePositionByOperatorIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_POSITION_BY_OPERATOR_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_POSITION_BY_OPERATOR_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_POSITION_BY_OPERATOR_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(InitializePositionByOperatorIxArgs::deserialize(&mut reader)?))
+        Ok(Self(InitializePositionByOperatorIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&INITIALIZE_POSITION_BY_OPERATOR_IX_DISCM)?;
@@ -5316,8 +4981,7 @@ pub fn initialize_position_by_operator_ix_with_program_id(
     keys: InitializePositionByOperatorKeys,
     args: InitializePositionByOperatorIxArgs,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; INITIALIZE_POSITION_BY_OPERATOR_IX_ACCOUNTS_LEN] = keys.into();
     let data: InitializePositionByOperatorIxData = args.into();
     Ok(Instruction {
         program_id,
@@ -5361,12 +5025,7 @@ pub fn initialize_position_by_operator_invoke_signed(
     args: InitializePositionByOperatorIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    initialize_position_by_operator_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    initialize_position_by_operator_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn initialize_position_by_operator_verify_account_keys(
     accounts: InitializePositionByOperatorAccounts<'_, '_>,
@@ -5443,8 +5102,7 @@ impl From<UpdatePositionOperatorAccounts<'_, '_>> for UpdatePositionOperatorKeys
         }
     }
 }
-impl From<UpdatePositionOperatorKeys>
-for [AccountMeta; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN] {
+impl From<UpdatePositionOperatorKeys> for [AccountMeta; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN] {
     fn from(keys: UpdatePositionOperatorKeys) -> Self {
         [
             AccountMeta {
@@ -5470,8 +5128,7 @@ for [AccountMeta; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN]>
-for UpdatePositionOperatorKeys {
+impl From<[Pubkey; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN]> for UpdatePositionOperatorKeys {
     fn from(pubkeys: [Pubkey; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
@@ -5482,7 +5139,8 @@ for UpdatePositionOperatorKeys {
     }
 }
 impl<'info> From<UpdatePositionOperatorAccounts<'_, 'info>>
-for [AccountInfo<'info>; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: UpdatePositionOperatorAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -5492,14 +5150,10 @@ for [AccountInfo<'info>; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN]>
-for UpdatePositionOperatorAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN]>
+    for UpdatePositionOperatorAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; UPDATE_POSITION_OPERATOR_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
             owner: &arr[1],
@@ -5508,16 +5162,7 @@ for UpdatePositionOperatorAccounts<'me, 'info> {
         }
     }
 }
-pub const UPDATE_POSITION_OPERATOR_IX_DISCM: [u8; 8] = [
-    202,
-    184,
-    103,
-    143,
-    180,
-    191,
-    116,
-    217,
-];
+pub const UPDATE_POSITION_OPERATOR_IX_DISCM: [u8; 8] = [202, 184, 103, 143, 180, 191, 116, 217];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct UpdatePositionOperatorIxArgs {
@@ -5537,16 +5182,16 @@ impl UpdatePositionOperatorIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != UPDATE_POSITION_OPERATOR_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        UPDATE_POSITION_OPERATOR_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {UPDATE_POSITION_OPERATOR_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(UpdatePositionOperatorIxArgs::deserialize(&mut reader)?))
+        Ok(Self(UpdatePositionOperatorIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&UPDATE_POSITION_OPERATOR_IX_DISCM)?;
@@ -5607,12 +5252,7 @@ pub fn update_position_operator_invoke_signed(
     args: UpdatePositionOperatorIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    update_position_operator_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    update_position_operator_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn update_position_operator_verify_account_keys(
     accounts: UpdatePositionOperatorAccounts<'_, '_>,
@@ -5817,8 +5457,7 @@ impl From<[Pubkey; SWAP_IX_ACCOUNTS_LEN]> for SwapKeys {
         }
     }
 }
-impl<'info> From<SwapAccounts<'_, 'info>>
-for [AccountInfo<'info>; SWAP_IX_ACCOUNTS_LEN] {
+impl<'info> From<SwapAccounts<'_, 'info>> for [AccountInfo<'info>; SWAP_IX_ACCOUNTS_LEN] {
     fn from(accounts: SwapAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -5840,7 +5479,8 @@ for [AccountInfo<'info>; SWAP_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; SWAP_IX_ACCOUNTS_LEN]>
-for SwapAccounts<'me, 'info> {
+    for SwapAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; SWAP_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -5881,15 +5521,9 @@ impl SwapIxData {
         let mut maybe_discm = [0u8; 8];
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != SWAP_IX_DISCM {
-            return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        SWAP_IX_DISCM, maybe_discm
-                    ),
-                ),
-            );
+            return Err(std::io::Error::other(format!(
+                "discm does not match. Expected: {SWAP_IX_DISCM:?}. Received: {maybe_discm:?}"
+            )));
         }
         Ok(Self(SwapIxArgs::deserialize(&mut reader)?))
     }
@@ -5954,7 +5588,10 @@ pub fn swap_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.reserve_x.key, keys.reserve_x),
         (*accounts.reserve_y.key, keys.reserve_y),
         (*accounts.user_token_in.key, keys.user_token_in),
@@ -6171,7 +5808,8 @@ impl From<[Pubkey; SWAP_EXACT_OUT_IX_ACCOUNTS_LEN]> for SwapExactOutKeys {
     }
 }
 impl<'info> From<SwapExactOutAccounts<'_, 'info>>
-for [AccountInfo<'info>; SWAP_EXACT_OUT_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; SWAP_EXACT_OUT_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: SwapExactOutAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -6193,7 +5831,8 @@ for [AccountInfo<'info>; SWAP_EXACT_OUT_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; SWAP_EXACT_OUT_IX_ACCOUNTS_LEN]>
-for SwapExactOutAccounts<'me, 'info> {
+    for SwapExactOutAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; SWAP_EXACT_OUT_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -6235,11 +5874,9 @@ impl SwapExactOutIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != SWAP_EXACT_OUT_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        SWAP_EXACT_OUT_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {SWAP_EXACT_OUT_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -6313,7 +5950,10 @@ pub fn swap_exact_out_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.reserve_x.key, keys.reserve_x),
         (*accounts.reserve_y.key, keys.reserve_y),
         (*accounts.user_token_in.key, keys.user_token_in),
@@ -6427,8 +6067,7 @@ impl From<SwapWithPriceImpactAccounts<'_, '_>> for SwapWithPriceImpactKeys {
         }
     }
 }
-impl From<SwapWithPriceImpactKeys>
-for [AccountMeta; SWAP_WITH_PRICE_IMPACT_IX_ACCOUNTS_LEN] {
+impl From<SwapWithPriceImpactKeys> for [AccountMeta; SWAP_WITH_PRICE_IMPACT_IX_ACCOUNTS_LEN] {
     fn from(keys: SwapWithPriceImpactKeys) -> Self {
         [
             AccountMeta {
@@ -6531,7 +6170,8 @@ impl From<[Pubkey; SWAP_WITH_PRICE_IMPACT_IX_ACCOUNTS_LEN]> for SwapWithPriceImp
     }
 }
 impl<'info> From<SwapWithPriceImpactAccounts<'_, 'info>>
-for [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: SwapWithPriceImpactAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -6553,10 +6193,9 @@ for [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT_IX_ACCOUNTS_LEN]>
-for SwapWithPriceImpactAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for SwapWithPriceImpactAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             bin_array_bitmap_extension: &arr[1],
@@ -6576,16 +6215,7 @@ for SwapWithPriceImpactAccounts<'me, 'info> {
         }
     }
 }
-pub const SWAP_WITH_PRICE_IMPACT_IX_DISCM: [u8; 8] = [
-    56,
-    173,
-    230,
-    208,
-    173,
-    228,
-    156,
-    205,
-];
+pub const SWAP_WITH_PRICE_IMPACT_IX_DISCM: [u8; 8] = [56, 173, 230, 208, 173, 228, 156, 205];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SwapWithPriceImpactIxArgs {
@@ -6607,11 +6237,9 @@ impl SwapWithPriceImpactIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != SWAP_WITH_PRICE_IMPACT_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        SWAP_WITH_PRICE_IMPACT_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {SWAP_WITH_PRICE_IMPACT_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -6677,12 +6305,7 @@ pub fn swap_with_price_impact_invoke_signed(
     args: SwapWithPriceImpactIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    swap_with_price_impact_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    swap_with_price_impact_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn swap_with_price_impact_verify_account_keys(
     accounts: SwapWithPriceImpactAccounts<'_, '_>,
@@ -6690,7 +6313,10 @@ pub fn swap_with_price_impact_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.reserve_x.key, keys.reserve_x),
         (*accounts.reserve_y.key, keys.reserve_y),
         (*accounts.user_token_in.key, keys.user_token_in),
@@ -6795,8 +6421,7 @@ impl From<WithdrawProtocolFeeAccounts<'_, '_>> for WithdrawProtocolFeeKeys {
         }
     }
 }
-impl From<WithdrawProtocolFeeKeys>
-for [AccountMeta; WITHDRAW_PROTOCOL_FEE_IX_ACCOUNTS_LEN] {
+impl From<WithdrawProtocolFeeKeys> for [AccountMeta; WITHDRAW_PROTOCOL_FEE_IX_ACCOUNTS_LEN] {
     fn from(keys: WithdrawProtocolFeeKeys) -> Self {
         [
             AccountMeta {
@@ -6881,7 +6506,8 @@ impl From<[Pubkey; WITHDRAW_PROTOCOL_FEE_IX_ACCOUNTS_LEN]> for WithdrawProtocolF
     }
 }
 impl<'info> From<WithdrawProtocolFeeAccounts<'_, 'info>>
-for [AccountInfo<'info>; WITHDRAW_PROTOCOL_FEE_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; WITHDRAW_PROTOCOL_FEE_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: WithdrawProtocolFeeAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -6900,10 +6526,9 @@ for [AccountInfo<'info>; WITHDRAW_PROTOCOL_FEE_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; WITHDRAW_PROTOCOL_FEE_IX_ACCOUNTS_LEN]>
-for WithdrawProtocolFeeAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; WITHDRAW_PROTOCOL_FEE_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for WithdrawProtocolFeeAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; WITHDRAW_PROTOCOL_FEE_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             reserve_x: &arr[1],
@@ -6920,16 +6545,7 @@ for WithdrawProtocolFeeAccounts<'me, 'info> {
         }
     }
 }
-pub const WITHDRAW_PROTOCOL_FEE_IX_DISCM: [u8; 8] = [
-    158,
-    201,
-    158,
-    189,
-    33,
-    93,
-    162,
-    103,
-];
+pub const WITHDRAW_PROTOCOL_FEE_IX_DISCM: [u8; 8] = [158, 201, 158, 189, 33, 93, 162, 103];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct WithdrawProtocolFeeIxArgs {
@@ -6951,11 +6567,9 @@ impl WithdrawProtocolFeeIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != WITHDRAW_PROTOCOL_FEE_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        WITHDRAW_PROTOCOL_FEE_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {WITHDRAW_PROTOCOL_FEE_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -7196,7 +6810,8 @@ impl From<[Pubkey; INITIALIZE_REWARD_IX_ACCOUNTS_LEN]> for InitializeRewardKeys 
     }
 }
 impl<'info> From<InitializeRewardAccounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_REWARD_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_REWARD_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializeRewardAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -7213,7 +6828,8 @@ for [AccountInfo<'info>; INITIALIZE_REWARD_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; INITIALIZE_REWARD_IX_ACCOUNTS_LEN]>
-for InitializeRewardAccounts<'me, 'info> {
+    for InitializeRewardAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; INITIALIZE_REWARD_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -7251,11 +6867,9 @@ impl InitializeRewardIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_REWARD_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_REWARD_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_REWARD_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -7479,7 +7093,8 @@ impl From<[Pubkey; FUND_REWARD_IX_ACCOUNTS_LEN]> for FundRewardKeys {
     }
 }
 impl<'info> From<FundRewardAccounts<'_, 'info>>
-for [AccountInfo<'info>; FUND_REWARD_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; FUND_REWARD_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: FundRewardAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -7495,7 +7110,8 @@ for [AccountInfo<'info>; FUND_REWARD_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; FUND_REWARD_IX_ACCOUNTS_LEN]>
-for FundRewardAccounts<'me, 'info> {
+    for FundRewardAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; FUND_REWARD_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -7533,11 +7149,9 @@ impl FundRewardIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != FUND_REWARD_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        FUND_REWARD_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {FUND_REWARD_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -7613,7 +7227,10 @@ pub fn fund_reward_verify_account_keys(
         (*accounts.lb_pair.key, keys.lb_pair),
         (*accounts.reward_vault.key, keys.reward_vault),
         (*accounts.reward_mint.key, keys.reward_mint),
-        (*accounts.funder_token_account.key, keys.funder_token_account),
+        (
+            *accounts.funder_token_account.key,
+            keys.funder_token_account,
+        ),
         (*accounts.funder.key, keys.funder),
         (*accounts.bin_array.key, keys.bin_array),
         (*accounts.token_program.key, keys.token_program),
@@ -7683,8 +7300,7 @@ impl From<UpdateRewardFunderAccounts<'_, '_>> for UpdateRewardFunderKeys {
         }
     }
 }
-impl From<UpdateRewardFunderKeys>
-for [AccountMeta; UPDATE_REWARD_FUNDER_IX_ACCOUNTS_LEN] {
+impl From<UpdateRewardFunderKeys> for [AccountMeta; UPDATE_REWARD_FUNDER_IX_ACCOUNTS_LEN] {
     fn from(keys: UpdateRewardFunderKeys) -> Self {
         [
             AccountMeta {
@@ -7721,7 +7337,8 @@ impl From<[Pubkey; UPDATE_REWARD_FUNDER_IX_ACCOUNTS_LEN]> for UpdateRewardFunder
     }
 }
 impl<'info> From<UpdateRewardFunderAccounts<'_, 'info>>
-for [AccountInfo<'info>; UPDATE_REWARD_FUNDER_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; UPDATE_REWARD_FUNDER_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: UpdateRewardFunderAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -7732,10 +7349,9 @@ for [AccountInfo<'info>; UPDATE_REWARD_FUNDER_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; UPDATE_REWARD_FUNDER_IX_ACCOUNTS_LEN]>
-for UpdateRewardFunderAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; UPDATE_REWARD_FUNDER_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for UpdateRewardFunderAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; UPDATE_REWARD_FUNDER_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             admin: &arr[1],
@@ -7765,11 +7381,9 @@ impl UpdateRewardFunderIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != UPDATE_REWARD_FUNDER_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        UPDATE_REWARD_FUNDER_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {UPDATE_REWARD_FUNDER_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -7908,8 +7522,7 @@ impl From<UpdateRewardDurationAccounts<'_, '_>> for UpdateRewardDurationKeys {
         }
     }
 }
-impl From<UpdateRewardDurationKeys>
-for [AccountMeta; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN] {
+impl From<UpdateRewardDurationKeys> for [AccountMeta; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN] {
     fn from(keys: UpdateRewardDurationKeys) -> Self {
         [
             AccountMeta {
@@ -7940,8 +7553,7 @@ for [AccountMeta; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN]>
-for UpdateRewardDurationKeys {
+impl From<[Pubkey; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN]> for UpdateRewardDurationKeys {
     fn from(pubkeys: [Pubkey; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: pubkeys[0],
@@ -7953,7 +7565,8 @@ for UpdateRewardDurationKeys {
     }
 }
 impl<'info> From<UpdateRewardDurationAccounts<'_, 'info>>
-for [AccountInfo<'info>; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: UpdateRewardDurationAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -7965,10 +7578,9 @@ for [AccountInfo<'info>; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN]>
-for UpdateRewardDurationAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for UpdateRewardDurationAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; UPDATE_REWARD_DURATION_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             admin: &arr[1],
@@ -7978,16 +7590,7 @@ for UpdateRewardDurationAccounts<'me, 'info> {
         }
     }
 }
-pub const UPDATE_REWARD_DURATION_IX_DISCM: [u8; 8] = [
-    138,
-    174,
-    196,
-    169,
-    213,
-    235,
-    254,
-    107,
-];
+pub const UPDATE_REWARD_DURATION_IX_DISCM: [u8; 8] = [138, 174, 196, 169, 213, 235, 254, 107];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct UpdateRewardDurationIxArgs {
@@ -8008,11 +7611,9 @@ impl UpdateRewardDurationIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != UPDATE_REWARD_DURATION_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        UPDATE_REWARD_DURATION_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {UPDATE_REWARD_DURATION_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -8078,12 +7679,7 @@ pub fn update_reward_duration_invoke_signed(
     args: UpdateRewardDurationIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    update_reward_duration_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    update_reward_duration_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn update_reward_duration_verify_account_keys(
     accounts: UpdateRewardDurationAccounts<'_, '_>,
@@ -8254,7 +7850,8 @@ impl From<[Pubkey; CLAIM_REWARD_IX_ACCOUNTS_LEN]> for ClaimRewardKeys {
     }
 }
 impl<'info> From<ClaimRewardAccounts<'_, 'info>>
-for [AccountInfo<'info>; CLAIM_REWARD_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; CLAIM_REWARD_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: ClaimRewardAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -8272,7 +7869,8 @@ for [AccountInfo<'info>; CLAIM_REWARD_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; CLAIM_REWARD_IX_ACCOUNTS_LEN]>
-for ClaimRewardAccounts<'me, 'info> {
+    for ClaimRewardAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; CLAIM_REWARD_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -8309,11 +7907,9 @@ impl ClaimRewardIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != CLAIM_REWARD_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        CLAIM_REWARD_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {CLAIM_REWARD_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -8589,8 +8185,7 @@ impl From<[Pubkey; CLAIM_FEE_IX_ACCOUNTS_LEN]> for ClaimFeeKeys {
         }
     }
 }
-impl<'info> From<ClaimFeeAccounts<'_, 'info>>
-for [AccountInfo<'info>; CLAIM_FEE_IX_ACCOUNTS_LEN] {
+impl<'info> From<ClaimFeeAccounts<'_, 'info>> for [AccountInfo<'info>; CLAIM_FEE_IX_ACCOUNTS_LEN] {
     fn from(accounts: ClaimFeeAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -8611,7 +8206,8 @@ for [AccountInfo<'info>; CLAIM_FEE_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; CLAIM_FEE_IX_ACCOUNTS_LEN]>
-for ClaimFeeAccounts<'me, 'info> {
+    for ClaimFeeAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; CLAIM_FEE_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -8640,15 +8236,9 @@ impl ClaimFeeIxData {
         let mut maybe_discm = [0u8; 8];
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != CLAIM_FEE_IX_DISCM {
-            return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        CLAIM_FEE_IX_DISCM, maybe_discm
-                    ),
-                ),
-            );
+            return Err(std::io::Error::other(format!(
+                "discm does not match. Expected: {CLAIM_FEE_IX_DISCM:?}. Received: {maybe_discm:?}"
+            )));
         }
         Ok(Self)
     }
@@ -8861,7 +8451,8 @@ impl From<[Pubkey; CLOSE_POSITION_IX_ACCOUNTS_LEN]> for ClosePositionKeys {
     }
 }
 impl<'info> From<ClosePositionAccounts<'_, 'info>>
-for [AccountInfo<'info>; CLOSE_POSITION_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; CLOSE_POSITION_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: ClosePositionAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -8876,7 +8467,8 @@ for [AccountInfo<'info>; CLOSE_POSITION_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; CLOSE_POSITION_IX_ACCOUNTS_LEN]>
-for ClosePositionAccounts<'me, 'info> {
+    for ClosePositionAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; CLOSE_POSITION_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
@@ -8900,11 +8492,9 @@ impl ClosePositionIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != CLOSE_POSITION_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        CLOSE_POSITION_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {CLOSE_POSITION_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -9039,7 +8629,8 @@ impl From<UpdateBaseFeeParametersAccounts<'_, '_>> for UpdateBaseFeeParametersKe
     }
 }
 impl From<UpdateBaseFeeParametersKeys>
-for [AccountMeta; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN]
+{
     fn from(keys: UpdateBaseFeeParametersKeys) -> Self {
         [
             AccountMeta {
@@ -9065,8 +8656,7 @@ for [AccountMeta; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN]>
-for UpdateBaseFeeParametersKeys {
+impl From<[Pubkey; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN]> for UpdateBaseFeeParametersKeys {
     fn from(pubkeys: [Pubkey; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: pubkeys[0],
@@ -9077,7 +8667,8 @@ for UpdateBaseFeeParametersKeys {
     }
 }
 impl<'info> From<UpdateBaseFeeParametersAccounts<'_, 'info>>
-for [AccountInfo<'info>; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: UpdateBaseFeeParametersAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -9087,14 +8678,10 @@ for [AccountInfo<'info>; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN]>
-for UpdateBaseFeeParametersAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN]>
+    for UpdateBaseFeeParametersAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; UPDATE_BASE_FEE_PARAMETERS_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             admin: &arr[1],
@@ -9103,16 +8690,7 @@ for UpdateBaseFeeParametersAccounts<'me, 'info> {
         }
     }
 }
-pub const UPDATE_BASE_FEE_PARAMETERS_IX_DISCM: [u8; 8] = [
-    75,
-    168,
-    223,
-    161,
-    16,
-    195,
-    3,
-    47,
-];
+pub const UPDATE_BASE_FEE_PARAMETERS_IX_DISCM: [u8; 8] = [75, 168, 223, 161, 16, 195, 3, 47];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct UpdateBaseFeeParametersIxArgs {
@@ -9132,16 +8710,16 @@ impl UpdateBaseFeeParametersIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != UPDATE_BASE_FEE_PARAMETERS_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        UPDATE_BASE_FEE_PARAMETERS_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {UPDATE_BASE_FEE_PARAMETERS_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(UpdateBaseFeeParametersIxArgs::deserialize(&mut reader)?))
+        Ok(Self(UpdateBaseFeeParametersIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&UPDATE_BASE_FEE_PARAMETERS_IX_DISCM)?;
@@ -9202,12 +8780,7 @@ pub fn update_base_fee_parameters_invoke_signed(
     args: UpdateBaseFeeParametersIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    update_base_fee_parameters_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    update_base_fee_parameters_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn update_base_fee_parameters_verify_account_keys(
     accounts: UpdateBaseFeeParametersAccounts<'_, '_>,
@@ -9267,8 +8840,7 @@ pub struct UpdateDynamicFeeParametersKeys {
     pub event_authority: Pubkey,
     pub program: Pubkey,
 }
-impl From<UpdateDynamicFeeParametersAccounts<'_, '_>>
-for UpdateDynamicFeeParametersKeys {
+impl From<UpdateDynamicFeeParametersAccounts<'_, '_>> for UpdateDynamicFeeParametersKeys {
     fn from(accounts: UpdateDynamicFeeParametersAccounts) -> Self {
         Self {
             lb_pair: *accounts.lb_pair.key,
@@ -9279,7 +8851,8 @@ for UpdateDynamicFeeParametersKeys {
     }
 }
 impl From<UpdateDynamicFeeParametersKeys>
-for [AccountMeta; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN]
+{
     fn from(keys: UpdateDynamicFeeParametersKeys) -> Self {
         [
             AccountMeta {
@@ -9306,7 +8879,8 @@ for [AccountMeta; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN]>
-for UpdateDynamicFeeParametersKeys {
+    for UpdateDynamicFeeParametersKeys
+{
     fn from(pubkeys: [Pubkey; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: pubkeys[0],
@@ -9317,7 +8891,8 @@ for UpdateDynamicFeeParametersKeys {
     }
 }
 impl<'info> From<UpdateDynamicFeeParametersAccounts<'_, 'info>>
-for [AccountInfo<'info>; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: UpdateDynamicFeeParametersAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -9327,14 +8902,10 @@ for [AccountInfo<'info>; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN]>
-for UpdateDynamicFeeParametersAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN]>
+    for UpdateDynamicFeeParametersAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             admin: &arr[1],
@@ -9343,16 +8914,7 @@ for UpdateDynamicFeeParametersAccounts<'me, 'info> {
         }
     }
 }
-pub const UPDATE_DYNAMIC_FEE_PARAMETERS_IX_DISCM: [u8; 8] = [
-    92,
-    161,
-    46,
-    246,
-    255,
-    189,
-    22,
-    22,
-];
+pub const UPDATE_DYNAMIC_FEE_PARAMETERS_IX_DISCM: [u8; 8] = [92, 161, 46, 246, 255, 189, 22, 22];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct UpdateDynamicFeeParametersIxArgs {
@@ -9372,16 +8934,16 @@ impl UpdateDynamicFeeParametersIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != UPDATE_DYNAMIC_FEE_PARAMETERS_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        UPDATE_DYNAMIC_FEE_PARAMETERS_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {UPDATE_DYNAMIC_FEE_PARAMETERS_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(UpdateDynamicFeeParametersIxArgs::deserialize(&mut reader)?))
+        Ok(Self(UpdateDynamicFeeParametersIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&UPDATE_DYNAMIC_FEE_PARAMETERS_IX_DISCM)?;
@@ -9398,8 +8960,7 @@ pub fn update_dynamic_fee_parameters_ix_with_program_id(
     keys: UpdateDynamicFeeParametersKeys,
     args: UpdateDynamicFeeParametersIxArgs,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; UPDATE_DYNAMIC_FEE_PARAMETERS_IX_ACCOUNTS_LEN] = keys.into();
     let data: UpdateDynamicFeeParametersIxData = args.into();
     Ok(Instruction {
         program_id,
@@ -9443,12 +9004,7 @@ pub fn update_dynamic_fee_parameters_invoke_signed(
     args: UpdateDynamicFeeParametersIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    update_dynamic_fee_parameters_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    update_dynamic_fee_parameters_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn update_dynamic_fee_parameters_verify_account_keys(
     accounts: UpdateDynamicFeeParametersAccounts<'_, '_>,
@@ -9521,8 +9077,7 @@ impl From<IncreaseOracleLengthAccounts<'_, '_>> for IncreaseOracleLengthKeys {
         }
     }
 }
-impl From<IncreaseOracleLengthKeys>
-for [AccountMeta; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN] {
+impl From<IncreaseOracleLengthKeys> for [AccountMeta; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN] {
     fn from(keys: IncreaseOracleLengthKeys) -> Self {
         [
             AccountMeta {
@@ -9553,8 +9108,7 @@ for [AccountMeta; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN]>
-for IncreaseOracleLengthKeys {
+impl From<[Pubkey; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN]> for IncreaseOracleLengthKeys {
     fn from(pubkeys: [Pubkey; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             oracle: pubkeys[0],
@@ -9566,7 +9120,8 @@ for IncreaseOracleLengthKeys {
     }
 }
 impl<'info> From<IncreaseOracleLengthAccounts<'_, 'info>>
-for [AccountInfo<'info>; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: IncreaseOracleLengthAccounts<'_, 'info>) -> Self {
         [
             accounts.oracle.clone(),
@@ -9578,10 +9133,9 @@ for [AccountInfo<'info>; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN]>
-for IncreaseOracleLengthAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for IncreaseOracleLengthAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; INCREASE_ORACLE_LENGTH_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             oracle: &arr[0],
             funder: &arr[1],
@@ -9591,16 +9145,7 @@ for IncreaseOracleLengthAccounts<'me, 'info> {
         }
     }
 }
-pub const INCREASE_ORACLE_LENGTH_IX_DISCM: [u8; 8] = [
-    190,
-    61,
-    125,
-    87,
-    103,
-    79,
-    158,
-    173,
-];
+pub const INCREASE_ORACLE_LENGTH_IX_DISCM: [u8; 8] = [190, 61, 125, 87, 103, 79, 158, 173];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct IncreaseOracleLengthIxArgs {
@@ -9620,11 +9165,9 @@ impl IncreaseOracleLengthIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INCREASE_ORACLE_LENGTH_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INCREASE_ORACLE_LENGTH_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INCREASE_ORACLE_LENGTH_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -9690,12 +9233,7 @@ pub fn increase_oracle_length_invoke_signed(
     args: IncreaseOracleLengthIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    increase_oracle_length_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    increase_oracle_length_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn increase_oracle_length_verify_account_keys(
     accounts: IncreaseOracleLengthAccounts<'_, '_>,
@@ -9767,7 +9305,8 @@ impl From<InitializePresetParameterAccounts<'_, '_>> for InitializePresetParamet
     }
 }
 impl From<InitializePresetParameterKeys>
-for [AccountMeta; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]
+{
     fn from(keys: InitializePresetParameterKeys) -> Self {
         [
             AccountMeta {
@@ -9793,8 +9332,7 @@ for [AccountMeta; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]>
-for InitializePresetParameterKeys {
+impl From<[Pubkey; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]> for InitializePresetParameterKeys {
     fn from(pubkeys: [Pubkey; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             preset_parameter: pubkeys[0],
@@ -9805,7 +9343,8 @@ for InitializePresetParameterKeys {
     }
 }
 impl<'info> From<InitializePresetParameterAccounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializePresetParameterAccounts<'_, 'info>) -> Self {
         [
             accounts.preset_parameter.clone(),
@@ -9815,14 +9354,10 @@ for [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]>
-for InitializePresetParameterAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]>
+    for InitializePresetParameterAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             preset_parameter: &arr[0],
             admin: &arr[1],
@@ -9831,16 +9366,7 @@ for InitializePresetParameterAccounts<'me, 'info> {
         }
     }
 }
-pub const INITIALIZE_PRESET_PARAMETER_IX_DISCM: [u8; 8] = [
-    66,
-    188,
-    71,
-    211,
-    98,
-    109,
-    14,
-    186,
-];
+pub const INITIALIZE_PRESET_PARAMETER_IX_DISCM: [u8; 8] = [66, 188, 71, 211, 98, 109, 14, 186];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct InitializePresetParameterIxArgs {
@@ -9860,16 +9386,16 @@ impl InitializePresetParameterIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_PRESET_PARAMETER_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_PRESET_PARAMETER_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_PRESET_PARAMETER_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(InitializePresetParameterIxArgs::deserialize(&mut reader)?))
+        Ok(Self(InitializePresetParameterIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&INITIALIZE_PRESET_PARAMETER_IX_DISCM)?;
@@ -9930,12 +9456,7 @@ pub fn initialize_preset_parameter_invoke_signed(
     args: InitializePresetParameterIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    initialize_preset_parameter_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    initialize_preset_parameter_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn initialize_preset_parameter_verify_account_keys(
     accounts: InitializePresetParameterAccounts<'_, '_>,
@@ -10002,8 +9523,7 @@ impl From<ClosePresetParameterAccounts<'_, '_>> for ClosePresetParameterKeys {
         }
     }
 }
-impl From<ClosePresetParameterKeys>
-for [AccountMeta; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN] {
+impl From<ClosePresetParameterKeys> for [AccountMeta; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN] {
     fn from(keys: ClosePresetParameterKeys) -> Self {
         [
             AccountMeta {
@@ -10024,8 +9544,7 @@ for [AccountMeta; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]>
-for ClosePresetParameterKeys {
+impl From<[Pubkey; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]> for ClosePresetParameterKeys {
     fn from(pubkeys: [Pubkey; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             preset_parameter: pubkeys[0],
@@ -10035,7 +9554,8 @@ for ClosePresetParameterKeys {
     }
 }
 impl<'info> From<ClosePresetParameterAccounts<'_, 'info>>
-for [AccountInfo<'info>; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: ClosePresetParameterAccounts<'_, 'info>) -> Self {
         [
             accounts.preset_parameter.clone(),
@@ -10045,10 +9565,9 @@ for [AccountInfo<'info>; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]>
-for ClosePresetParameterAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for ClosePresetParameterAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; CLOSE_PRESET_PARAMETER_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             preset_parameter: &arr[0],
             admin: &arr[1],
@@ -10056,16 +9575,7 @@ for ClosePresetParameterAccounts<'me, 'info> {
         }
     }
 }
-pub const CLOSE_PRESET_PARAMETER_IX_DISCM: [u8; 8] = [
-    4,
-    148,
-    145,
-    100,
-    134,
-    26,
-    181,
-    61,
-];
+pub const CLOSE_PRESET_PARAMETER_IX_DISCM: [u8; 8] = [4, 148, 145, 100, 134, 26, 181, 61];
 #[derive(Clone, Debug, PartialEq)]
 pub struct ClosePresetParameterIxData;
 impl ClosePresetParameterIxData {
@@ -10075,11 +9585,9 @@ impl ClosePresetParameterIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != CLOSE_PRESET_PARAMETER_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        CLOSE_PRESET_PARAMETER_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {CLOSE_PRESET_PARAMETER_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -10106,9 +9614,7 @@ pub fn close_preset_parameter_ix_with_program_id(
         data: ClosePresetParameterIxData.try_to_vec()?,
     })
 }
-pub fn close_preset_parameter_ix(
-    keys: ClosePresetParameterKeys,
-) -> std::io::Result<Instruction> {
+pub fn close_preset_parameter_ix(keys: ClosePresetParameterKeys) -> std::io::Result<Instruction> {
     close_preset_parameter_ix_with_program_id(crate::ID, keys)
 }
 pub fn close_preset_parameter_invoke_with_program_id(
@@ -10207,8 +9713,7 @@ impl From<ClosePresetParameter2Accounts<'_, '_>> for ClosePresetParameter2Keys {
         }
     }
 }
-impl From<ClosePresetParameter2Keys>
-for [AccountMeta; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN] {
+impl From<ClosePresetParameter2Keys> for [AccountMeta; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN] {
     fn from(keys: ClosePresetParameter2Keys) -> Self {
         [
             AccountMeta {
@@ -10229,8 +9734,7 @@ for [AccountMeta; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]>
-for ClosePresetParameter2Keys {
+impl From<[Pubkey; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]> for ClosePresetParameter2Keys {
     fn from(pubkeys: [Pubkey; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             preset_parameter: pubkeys[0],
@@ -10240,7 +9744,8 @@ for ClosePresetParameter2Keys {
     }
 }
 impl<'info> From<ClosePresetParameter2Accounts<'_, 'info>>
-for [AccountInfo<'info>; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: ClosePresetParameter2Accounts<'_, 'info>) -> Self {
         [
             accounts.preset_parameter.clone(),
@@ -10250,10 +9755,9 @@ for [AccountInfo<'info>; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]>
-for ClosePresetParameter2Accounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for ClosePresetParameter2Accounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; CLOSE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             preset_parameter: &arr[0],
             admin: &arr[1],
@@ -10261,16 +9765,7 @@ for ClosePresetParameter2Accounts<'me, 'info> {
         }
     }
 }
-pub const CLOSE_PRESET_PARAMETER2_IX_DISCM: [u8; 8] = [
-    39,
-    25,
-    95,
-    107,
-    116,
-    17,
-    115,
-    28,
-];
+pub const CLOSE_PRESET_PARAMETER2_IX_DISCM: [u8; 8] = [39, 25, 95, 107, 116, 17, 115, 28];
 #[derive(Clone, Debug, PartialEq)]
 pub struct ClosePresetParameter2IxData;
 impl ClosePresetParameter2IxData {
@@ -10280,11 +9775,9 @@ impl ClosePresetParameter2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != CLOSE_PRESET_PARAMETER2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        CLOSE_PRESET_PARAMETER2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {CLOSE_PRESET_PARAMETER2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -10311,9 +9804,7 @@ pub fn close_preset_parameter2_ix_with_program_id(
         data: ClosePresetParameter2IxData.try_to_vec()?,
     })
 }
-pub fn close_preset_parameter2_ix(
-    keys: ClosePresetParameter2Keys,
-) -> std::io::Result<Instruction> {
+pub fn close_preset_parameter2_ix(keys: ClosePresetParameter2Keys) -> std::io::Result<Instruction> {
     close_preset_parameter2_ix_with_program_id(crate::ID, keys)
 }
 pub fn close_preset_parameter2_invoke_with_program_id(
@@ -10451,8 +9942,7 @@ impl From<RemoveAllLiquidityAccounts<'_, '_>> for RemoveAllLiquidityKeys {
         }
     }
 }
-impl From<RemoveAllLiquidityKeys>
-for [AccountMeta; REMOVE_ALL_LIQUIDITY_IX_ACCOUNTS_LEN] {
+impl From<RemoveAllLiquidityKeys> for [AccountMeta; REMOVE_ALL_LIQUIDITY_IX_ACCOUNTS_LEN] {
     fn from(keys: RemoveAllLiquidityKeys) -> Self {
         [
             AccountMeta {
@@ -10561,7 +10051,8 @@ impl From<[Pubkey; REMOVE_ALL_LIQUIDITY_IX_ACCOUNTS_LEN]> for RemoveAllLiquidity
     }
 }
 impl<'info> From<RemoveAllLiquidityAccounts<'_, 'info>>
-for [AccountInfo<'info>; REMOVE_ALL_LIQUIDITY_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; REMOVE_ALL_LIQUIDITY_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: RemoveAllLiquidityAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -10584,10 +10075,9 @@ for [AccountInfo<'info>; REMOVE_ALL_LIQUIDITY_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; REMOVE_ALL_LIQUIDITY_IX_ACCOUNTS_LEN]>
-for RemoveAllLiquidityAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; REMOVE_ALL_LIQUIDITY_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for RemoveAllLiquidityAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; REMOVE_ALL_LIQUIDITY_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
             lb_pair: &arr[1],
@@ -10618,11 +10108,9 @@ impl RemoveAllLiquidityIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != REMOVE_ALL_LIQUIDITY_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        REMOVE_ALL_LIQUIDITY_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {REMOVE_ALL_LIQUIDITY_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -10649,9 +10137,7 @@ pub fn remove_all_liquidity_ix_with_program_id(
         data: RemoveAllLiquidityIxData.try_to_vec()?,
     })
 }
-pub fn remove_all_liquidity_ix(
-    keys: RemoveAllLiquidityKeys,
-) -> std::io::Result<Instruction> {
+pub fn remove_all_liquidity_ix(keys: RemoveAllLiquidityKeys) -> std::io::Result<Instruction> {
     remove_all_liquidity_ix_with_program_id(crate::ID, keys)
 }
 pub fn remove_all_liquidity_invoke_with_program_id(
@@ -10662,9 +10148,7 @@ pub fn remove_all_liquidity_invoke_with_program_id(
     let ix = remove_all_liquidity_ix_with_program_id(program_id, keys)?;
     invoke_instruction(&ix, accounts)
 }
-pub fn remove_all_liquidity_invoke(
-    accounts: RemoveAllLiquidityAccounts<'_, '_>,
-) -> ProgramResult {
+pub fn remove_all_liquidity_invoke(accounts: RemoveAllLiquidityAccounts<'_, '_>) -> ProgramResult {
     remove_all_liquidity_invoke_with_program_id(crate::ID, accounts)
 }
 pub fn remove_all_liquidity_invoke_signed_with_program_id(
@@ -10689,7 +10173,10 @@ pub fn remove_all_liquidity_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token_x.key, keys.user_token_x),
         (*accounts.user_token_y.key, keys.user_token_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -10791,13 +10278,15 @@ impl From<[Pubkey; SET_PAIR_STATUS_IX_ACCOUNTS_LEN]> for SetPairStatusKeys {
     }
 }
 impl<'info> From<SetPairStatusAccounts<'_, 'info>>
-for [AccountInfo<'info>; SET_PAIR_STATUS_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; SET_PAIR_STATUS_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: SetPairStatusAccounts<'_, 'info>) -> Self {
         [accounts.lb_pair.clone(), accounts.admin.clone()]
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; SET_PAIR_STATUS_IX_ACCOUNTS_LEN]>
-for SetPairStatusAccounts<'me, 'info> {
+    for SetPairStatusAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; SET_PAIR_STATUS_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -10825,11 +10314,9 @@ impl SetPairStatusIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != SET_PAIR_STATUS_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        SET_PAIR_STATUS_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {SET_PAIR_STATUS_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -11054,7 +10541,8 @@ impl From<[Pubkey; MIGRATE_POSITION_IX_ACCOUNTS_LEN]> for MigratePositionKeys {
     }
 }
 impl<'info> From<MigratePositionAccounts<'_, 'info>>
-for [AccountInfo<'info>; MIGRATE_POSITION_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; MIGRATE_POSITION_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: MigratePositionAccounts<'_, 'info>) -> Self {
         [
             accounts.position_v2.clone(),
@@ -11071,7 +10559,8 @@ for [AccountInfo<'info>; MIGRATE_POSITION_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; MIGRATE_POSITION_IX_ACCOUNTS_LEN]>
-for MigratePositionAccounts<'me, 'info> {
+    for MigratePositionAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; MIGRATE_POSITION_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position_v2: &arr[0],
@@ -11097,11 +10586,9 @@ impl MigratePositionIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != MIGRATE_POSITION_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        MIGRATE_POSITION_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {MIGRATE_POSITION_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -11139,9 +10626,7 @@ pub fn migrate_position_invoke_with_program_id(
     let ix = migrate_position_ix_with_program_id(program_id, keys)?;
     invoke_instruction(&ix, accounts)
 }
-pub fn migrate_position_invoke(
-    accounts: MigratePositionAccounts<'_, '_>,
-) -> ProgramResult {
+pub fn migrate_position_invoke(accounts: MigratePositionAccounts<'_, '_>) -> ProgramResult {
     migrate_position_invoke_with_program_id(crate::ID, accounts)
 }
 pub fn migrate_position_invoke_signed_with_program_id(
@@ -11233,28 +10718,30 @@ impl From<MigrateBinArrayAccounts<'_, '_>> for MigrateBinArrayKeys {
 }
 impl From<MigrateBinArrayKeys> for [AccountMeta; MIGRATE_BIN_ARRAY_IX_ACCOUNTS_LEN] {
     fn from(keys: MigrateBinArrayKeys) -> Self {
-        [
-            AccountMeta {
-                pubkey: keys.lb_pair,
-                is_signer: false,
-                is_writable: false,
-            },
-        ]
+        [AccountMeta {
+            pubkey: keys.lb_pair,
+            is_signer: false,
+            is_writable: false,
+        }]
     }
 }
 impl From<[Pubkey; MIGRATE_BIN_ARRAY_IX_ACCOUNTS_LEN]> for MigrateBinArrayKeys {
     fn from(pubkeys: [Pubkey; MIGRATE_BIN_ARRAY_IX_ACCOUNTS_LEN]) -> Self {
-        Self { lb_pair: pubkeys[0] }
+        Self {
+            lb_pair: pubkeys[0],
+        }
     }
 }
 impl<'info> From<MigrateBinArrayAccounts<'_, 'info>>
-for [AccountInfo<'info>; MIGRATE_BIN_ARRAY_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; MIGRATE_BIN_ARRAY_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: MigrateBinArrayAccounts<'_, 'info>) -> Self {
         [accounts.lb_pair.clone()]
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; MIGRATE_BIN_ARRAY_IX_ACCOUNTS_LEN]>
-for MigrateBinArrayAccounts<'me, 'info> {
+    for MigrateBinArrayAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; MIGRATE_BIN_ARRAY_IX_ACCOUNTS_LEN]) -> Self {
         Self { lb_pair: &arr[0] }
     }
@@ -11269,11 +10756,9 @@ impl MigrateBinArrayIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != MIGRATE_BIN_ARRAY_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        MIGRATE_BIN_ARRAY_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {MIGRATE_BIN_ARRAY_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -11311,9 +10796,7 @@ pub fn migrate_bin_array_invoke_with_program_id(
     let ix = migrate_bin_array_ix_with_program_id(program_id, keys)?;
     invoke_instruction(&ix, accounts)
 }
-pub fn migrate_bin_array_invoke(
-    accounts: MigrateBinArrayAccounts<'_, '_>,
-) -> ProgramResult {
+pub fn migrate_bin_array_invoke(accounts: MigrateBinArrayAccounts<'_, '_>) -> ProgramResult {
     migrate_bin_array_invoke_with_program_id(crate::ID, accounts)
 }
 pub fn migrate_bin_array_invoke_signed_with_program_id(
@@ -11370,8 +10853,7 @@ impl From<UpdateFeesAndRewardsAccounts<'_, '_>> for UpdateFeesAndRewardsKeys {
         }
     }
 }
-impl From<UpdateFeesAndRewardsKeys>
-for [AccountMeta; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN] {
+impl From<UpdateFeesAndRewardsKeys> for [AccountMeta; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN] {
     fn from(keys: UpdateFeesAndRewardsKeys) -> Self {
         [
             AccountMeta {
@@ -11402,8 +10884,7 @@ for [AccountMeta; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN]>
-for UpdateFeesAndRewardsKeys {
+impl From<[Pubkey; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN]> for UpdateFeesAndRewardsKeys {
     fn from(pubkeys: [Pubkey; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
@@ -11415,7 +10896,8 @@ for UpdateFeesAndRewardsKeys {
     }
 }
 impl<'info> From<UpdateFeesAndRewardsAccounts<'_, 'info>>
-for [AccountInfo<'info>; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: UpdateFeesAndRewardsAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -11427,10 +10909,9 @@ for [AccountInfo<'info>; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN]>
-for UpdateFeesAndRewardsAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for UpdateFeesAndRewardsAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; UPDATE_FEES_AND_REWARDS_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
             lb_pair: &arr[1],
@@ -11440,16 +10921,7 @@ for UpdateFeesAndRewardsAccounts<'me, 'info> {
         }
     }
 }
-pub const UPDATE_FEES_AND_REWARDS_IX_DISCM: [u8; 8] = [
-    154,
-    230,
-    250,
-    13,
-    236,
-    209,
-    75,
-    223,
-];
+pub const UPDATE_FEES_AND_REWARDS_IX_DISCM: [u8; 8] = [154, 230, 250, 13, 236, 209, 75, 223];
 #[derive(Clone, Debug, PartialEq)]
 pub struct UpdateFeesAndRewardsIxData;
 impl UpdateFeesAndRewardsIxData {
@@ -11459,11 +10931,9 @@ impl UpdateFeesAndRewardsIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != UPDATE_FEES_AND_REWARDS_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        UPDATE_FEES_AND_REWARDS_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {UPDATE_FEES_AND_REWARDS_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -11490,9 +10960,7 @@ pub fn update_fees_and_rewards_ix_with_program_id(
         data: UpdateFeesAndRewardsIxData.try_to_vec()?,
     })
 }
-pub fn update_fees_and_rewards_ix(
-    keys: UpdateFeesAndRewardsKeys,
-) -> std::io::Result<Instruction> {
+pub fn update_fees_and_rewards_ix(keys: UpdateFeesAndRewardsKeys) -> std::io::Result<Instruction> {
     update_fees_and_rewards_ix_with_program_id(crate::ID, keys)
 }
 pub fn update_fees_and_rewards_invoke_with_program_id(
@@ -11616,7 +11084,8 @@ impl From<WithdrawIneligibleRewardAccounts<'_, '_>> for WithdrawIneligibleReward
     }
 }
 impl From<WithdrawIneligibleRewardKeys>
-for [AccountMeta; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN]
+{
     fn from(keys: WithdrawIneligibleRewardKeys) -> Self {
         [
             AccountMeta {
@@ -11672,8 +11141,7 @@ for [AccountMeta; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN]>
-for WithdrawIneligibleRewardKeys {
+impl From<[Pubkey; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN]> for WithdrawIneligibleRewardKeys {
     fn from(pubkeys: [Pubkey; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: pubkeys[0],
@@ -11690,7 +11158,8 @@ for WithdrawIneligibleRewardKeys {
     }
 }
 impl<'info> From<WithdrawIneligibleRewardAccounts<'_, 'info>>
-for [AccountInfo<'info>; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: WithdrawIneligibleRewardAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -11706,14 +11175,10 @@ for [AccountInfo<'info>; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN]>
-for WithdrawIneligibleRewardAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN]>
+    for WithdrawIneligibleRewardAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; WITHDRAW_INELIGIBLE_REWARD_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             reward_vault: &arr[1],
@@ -11728,16 +11193,7 @@ for WithdrawIneligibleRewardAccounts<'me, 'info> {
         }
     }
 }
-pub const WITHDRAW_INELIGIBLE_REWARD_IX_DISCM: [u8; 8] = [
-    148,
-    206,
-    42,
-    195,
-    247,
-    49,
-    103,
-    8,
-];
+pub const WITHDRAW_INELIGIBLE_REWARD_IX_DISCM: [u8; 8] = [148, 206, 42, 195, 247, 49, 103, 8];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct WithdrawIneligibleRewardIxArgs {
@@ -11758,16 +11214,16 @@ impl WithdrawIneligibleRewardIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != WITHDRAW_INELIGIBLE_REWARD_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        WITHDRAW_INELIGIBLE_REWARD_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {WITHDRAW_INELIGIBLE_REWARD_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(WithdrawIneligibleRewardIxArgs::deserialize(&mut reader)?))
+        Ok(Self(WithdrawIneligibleRewardIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&WITHDRAW_INELIGIBLE_REWARD_IX_DISCM)?;
@@ -11828,12 +11284,7 @@ pub fn withdraw_ineligible_reward_invoke_signed(
     args: WithdrawIneligibleRewardIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    withdraw_ineligible_reward_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    withdraw_ineligible_reward_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn withdraw_ineligible_reward_verify_account_keys(
     accounts: WithdrawIneligibleRewardAccounts<'_, '_>,
@@ -11843,7 +11294,10 @@ pub fn withdraw_ineligible_reward_verify_account_keys(
         (*accounts.lb_pair.key, keys.lb_pair),
         (*accounts.reward_vault.key, keys.reward_vault),
         (*accounts.reward_mint.key, keys.reward_mint),
-        (*accounts.funder_token_account.key, keys.funder_token_account),
+        (
+            *accounts.funder_token_account.key,
+            keys.funder_token_account,
+        ),
         (*accounts.funder.key, keys.funder),
         (*accounts.bin_array.key, keys.bin_array),
         (*accounts.token_program.key, keys.token_program),
@@ -11908,8 +11362,7 @@ impl From<SetActivationPointAccounts<'_, '_>> for SetActivationPointKeys {
         }
     }
 }
-impl From<SetActivationPointKeys>
-for [AccountMeta; SET_ACTIVATION_POINT_IX_ACCOUNTS_LEN] {
+impl From<SetActivationPointKeys> for [AccountMeta; SET_ACTIVATION_POINT_IX_ACCOUNTS_LEN] {
     fn from(keys: SetActivationPointKeys) -> Self {
         [
             AccountMeta {
@@ -11934,16 +11387,16 @@ impl From<[Pubkey; SET_ACTIVATION_POINT_IX_ACCOUNTS_LEN]> for SetActivationPoint
     }
 }
 impl<'info> From<SetActivationPointAccounts<'_, 'info>>
-for [AccountInfo<'info>; SET_ACTIVATION_POINT_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; SET_ACTIVATION_POINT_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: SetActivationPointAccounts<'_, 'info>) -> Self {
         [accounts.lb_pair.clone(), accounts.admin.clone()]
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; SET_ACTIVATION_POINT_IX_ACCOUNTS_LEN]>
-for SetActivationPointAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; SET_ACTIVATION_POINT_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for SetActivationPointAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; SET_ACTIVATION_POINT_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             admin: &arr[1],
@@ -11970,11 +11423,9 @@ impl SetActivationPointIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != SET_ACTIVATION_POINT_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        SET_ACTIVATION_POINT_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {SET_ACTIVATION_POINT_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -12144,8 +11595,7 @@ impl From<RemoveLiquidityByRangeAccounts<'_, '_>> for RemoveLiquidityByRangeKeys
         }
     }
 }
-impl From<RemoveLiquidityByRangeKeys>
-for [AccountMeta; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN] {
+impl From<RemoveLiquidityByRangeKeys> for [AccountMeta; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN] {
     fn from(keys: RemoveLiquidityByRangeKeys) -> Self {
         [
             AccountMeta {
@@ -12231,8 +11681,7 @@ for [AccountMeta; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN]>
-for RemoveLiquidityByRangeKeys {
+impl From<[Pubkey; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN]> for RemoveLiquidityByRangeKeys {
     fn from(pubkeys: [Pubkey; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
@@ -12255,7 +11704,8 @@ for RemoveLiquidityByRangeKeys {
     }
 }
 impl<'info> From<RemoveLiquidityByRangeAccounts<'_, 'info>>
-for [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: RemoveLiquidityByRangeAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -12277,14 +11727,10 @@ for [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN]>
-for RemoveLiquidityByRangeAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN]>
+    for RemoveLiquidityByRangeAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
             lb_pair: &arr[1],
@@ -12305,16 +11751,7 @@ for RemoveLiquidityByRangeAccounts<'me, 'info> {
         }
     }
 }
-pub const REMOVE_LIQUIDITY_BY_RANGE_IX_DISCM: [u8; 8] = [
-    26,
-    82,
-    102,
-    152,
-    240,
-    74,
-    105,
-    26,
-];
+pub const REMOVE_LIQUIDITY_BY_RANGE_IX_DISCM: [u8; 8] = [26, 82, 102, 152, 240, 74, 105, 26];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct RemoveLiquidityByRangeIxArgs {
@@ -12336,16 +11773,16 @@ impl RemoveLiquidityByRangeIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != REMOVE_LIQUIDITY_BY_RANGE_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        REMOVE_LIQUIDITY_BY_RANGE_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {REMOVE_LIQUIDITY_BY_RANGE_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(RemoveLiquidityByRangeIxArgs::deserialize(&mut reader)?))
+        Ok(Self(RemoveLiquidityByRangeIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&REMOVE_LIQUIDITY_BY_RANGE_IX_DISCM)?;
@@ -12406,12 +11843,7 @@ pub fn remove_liquidity_by_range_invoke_signed(
     args: RemoveLiquidityByRangeIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    remove_liquidity_by_range_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    remove_liquidity_by_range_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn remove_liquidity_by_range_verify_account_keys(
     accounts: RemoveLiquidityByRangeAccounts<'_, '_>,
@@ -12420,7 +11852,10 @@ pub fn remove_liquidity_by_range_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token_x.key, keys.user_token_x),
         (*accounts.user_token_y.key, keys.user_token_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -12509,8 +11944,7 @@ pub struct AddLiquidityOneSidePreciseKeys {
     pub event_authority: Pubkey,
     pub program: Pubkey,
 }
-impl From<AddLiquidityOneSidePreciseAccounts<'_, '_>>
-for AddLiquidityOneSidePreciseKeys {
+impl From<AddLiquidityOneSidePreciseAccounts<'_, '_>> for AddLiquidityOneSidePreciseKeys {
     fn from(accounts: AddLiquidityOneSidePreciseAccounts) -> Self {
         Self {
             position: *accounts.position.key,
@@ -12529,7 +11963,8 @@ for AddLiquidityOneSidePreciseKeys {
     }
 }
 impl From<AddLiquidityOneSidePreciseKeys>
-for [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN]
+{
     fn from(keys: AddLiquidityOneSidePreciseKeys) -> Self {
         [
             AccountMeta {
@@ -12596,7 +12031,8 @@ for [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN]>
-for AddLiquidityOneSidePreciseKeys {
+    for AddLiquidityOneSidePreciseKeys
+{
     fn from(pubkeys: [Pubkey; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
@@ -12615,7 +12051,8 @@ for AddLiquidityOneSidePreciseKeys {
     }
 }
 impl<'info> From<AddLiquidityOneSidePreciseAccounts<'_, 'info>>
-for [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: AddLiquidityOneSidePreciseAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -12633,11 +12070,9 @@ for [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN]>
-for AddLiquidityOneSidePreciseAccounts<'me, 'info> {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN]>
+    for AddLiquidityOneSidePreciseAccounts<'me, 'info>
+{
     fn from(
         arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN],
     ) -> Self {
@@ -12657,16 +12092,7 @@ for AddLiquidityOneSidePreciseAccounts<'me, 'info> {
         }
     }
 }
-pub const ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_DISCM: [u8; 8] = [
-    161,
-    194,
-    103,
-    84,
-    171,
-    71,
-    250,
-    154,
-];
+pub const ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_DISCM: [u8; 8] = [161, 194, 103, 84, 171, 71, 250, 154];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AddLiquidityOneSidePreciseIxArgs {
@@ -12686,16 +12112,16 @@ impl AddLiquidityOneSidePreciseIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(AddLiquidityOneSidePreciseIxArgs::deserialize(&mut reader)?))
+        Ok(Self(AddLiquidityOneSidePreciseIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_DISCM)?;
@@ -12712,8 +12138,7 @@ pub fn add_liquidity_one_side_precise_ix_with_program_id(
     keys: AddLiquidityOneSidePreciseKeys,
     args: AddLiquidityOneSidePreciseIxArgs,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_PRECISE_IX_ACCOUNTS_LEN] = keys.into();
     let data: AddLiquidityOneSidePreciseIxData = args.into();
     Ok(Instruction {
         program_id,
@@ -12757,12 +12182,7 @@ pub fn add_liquidity_one_side_precise_invoke_signed(
     args: AddLiquidityOneSidePreciseIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    add_liquidity_one_side_precise_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    add_liquidity_one_side_precise_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn add_liquidity_one_side_precise_verify_account_keys(
     accounts: AddLiquidityOneSidePreciseAccounts<'_, '_>,
@@ -12771,7 +12191,10 @@ pub fn add_liquidity_one_side_precise_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token.key, keys.user_token),
         (*accounts.reserve.key, keys.reserve),
         (*accounts.token_mint.key, keys.token_mint),
@@ -12903,7 +12326,8 @@ impl From<[Pubkey; GO_TO_A_BIN_IX_ACCOUNTS_LEN]> for GoToABinKeys {
     }
 }
 impl<'info> From<GoToABinAccounts<'_, 'info>>
-for [AccountInfo<'info>; GO_TO_A_BIN_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; GO_TO_A_BIN_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: GoToABinAccounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -12916,7 +12340,8 @@ for [AccountInfo<'info>; GO_TO_A_BIN_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; GO_TO_A_BIN_IX_ACCOUNTS_LEN]>
-for GoToABinAccounts<'me, 'info> {
+    for GoToABinAccounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; GO_TO_A_BIN_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -12948,11 +12373,9 @@ impl GoToABinIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != GO_TO_A_BIN_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        GO_TO_A_BIN_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {GO_TO_A_BIN_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -12982,10 +12405,7 @@ pub fn go_to_a_bin_ix_with_program_id(
         data: data.try_to_vec()?,
     })
 }
-pub fn go_to_a_bin_ix(
-    keys: GoToABinKeys,
-    args: GoToABinIxArgs,
-) -> std::io::Result<Instruction> {
+pub fn go_to_a_bin_ix(keys: GoToABinKeys, args: GoToABinIxArgs) -> std::io::Result<Instruction> {
     go_to_a_bin_ix_with_program_id(crate::ID, keys, args)
 }
 pub fn go_to_a_bin_invoke_with_program_id(
@@ -13026,7 +12446,10 @@ pub fn go_to_a_bin_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.from_bin_array.key, keys.from_bin_array),
         (*accounts.to_bin_array.key, keys.to_bin_array),
         (*accounts.event_authority.key, keys.event_authority),
@@ -13074,7 +12497,8 @@ impl From<SetPreActivationDurationAccounts<'_, '_>> for SetPreActivationDuration
     }
 }
 impl From<SetPreActivationDurationKeys>
-for [AccountMeta; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN]
+{
     fn from(keys: SetPreActivationDurationKeys) -> Self {
         [
             AccountMeta {
@@ -13090,8 +12514,7 @@ for [AccountMeta; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN]>
-for SetPreActivationDurationKeys {
+impl From<[Pubkey; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN]> for SetPreActivationDurationKeys {
     fn from(pubkeys: [Pubkey; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: pubkeys[0],
@@ -13100,35 +12523,23 @@ for SetPreActivationDurationKeys {
     }
 }
 impl<'info> From<SetPreActivationDurationAccounts<'_, 'info>>
-for [AccountInfo<'info>; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: SetPreActivationDurationAccounts<'_, 'info>) -> Self {
         [accounts.lb_pair.clone(), accounts.creator.clone()]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN]>
-for SetPreActivationDurationAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN]>
+    for SetPreActivationDurationAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; SET_PRE_ACTIVATION_DURATION_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             creator: &arr[1],
         }
     }
 }
-pub const SET_PRE_ACTIVATION_DURATION_IX_DISCM: [u8; 8] = [
-    165,
-    61,
-    201,
-    244,
-    130,
-    159,
-    22,
-    100,
-];
+pub const SET_PRE_ACTIVATION_DURATION_IX_DISCM: [u8; 8] = [165, 61, 201, 244, 130, 159, 22, 100];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SetPreActivationDurationIxArgs {
@@ -13148,16 +12559,16 @@ impl SetPreActivationDurationIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != SET_PRE_ACTIVATION_DURATION_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        SET_PRE_ACTIVATION_DURATION_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {SET_PRE_ACTIVATION_DURATION_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(SetPreActivationDurationIxArgs::deserialize(&mut reader)?))
+        Ok(Self(SetPreActivationDurationIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&SET_PRE_ACTIVATION_DURATION_IX_DISCM)?;
@@ -13218,12 +12629,7 @@ pub fn set_pre_activation_duration_invoke_signed(
     args: SetPreActivationDurationIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    set_pre_activation_duration_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    set_pre_activation_duration_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn set_pre_activation_duration_verify_account_keys(
     accounts: SetPreActivationDurationAccounts<'_, '_>,
@@ -13277,8 +12683,7 @@ pub struct SetPreActivationSwapAddressKeys {
     pub lb_pair: Pubkey,
     pub creator: Pubkey,
 }
-impl From<SetPreActivationSwapAddressAccounts<'_, '_>>
-for SetPreActivationSwapAddressKeys {
+impl From<SetPreActivationSwapAddressAccounts<'_, '_>> for SetPreActivationSwapAddressKeys {
     fn from(accounts: SetPreActivationSwapAddressAccounts) -> Self {
         Self {
             lb_pair: *accounts.lb_pair.key,
@@ -13287,7 +12692,8 @@ for SetPreActivationSwapAddressKeys {
     }
 }
 impl From<SetPreActivationSwapAddressKeys>
-for [AccountMeta; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN]
+{
     fn from(keys: SetPreActivationSwapAddressKeys) -> Self {
         [
             AccountMeta {
@@ -13304,7 +12710,8 @@ for [AccountMeta; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN]>
-for SetPreActivationSwapAddressKeys {
+    for SetPreActivationSwapAddressKeys
+{
     fn from(pubkeys: [Pubkey; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: pubkeys[0],
@@ -13313,16 +12720,15 @@ for SetPreActivationSwapAddressKeys {
     }
 }
 impl<'info> From<SetPreActivationSwapAddressAccounts<'_, 'info>>
-for [AccountInfo<'info>; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: SetPreActivationSwapAddressAccounts<'_, 'info>) -> Self {
         [accounts.lb_pair.clone(), accounts.creator.clone()]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN]>
-for SetPreActivationSwapAddressAccounts<'me, 'info> {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN]>
+    for SetPreActivationSwapAddressAccounts<'me, 'info>
+{
     fn from(
         arr: &'me [AccountInfo<'info>; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN],
     ) -> Self {
@@ -13332,16 +12738,7 @@ for SetPreActivationSwapAddressAccounts<'me, 'info> {
         }
     }
 }
-pub const SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_DISCM: [u8; 8] = [
-    57,
-    139,
-    47,
-    123,
-    216,
-    80,
-    223,
-    10,
-];
+pub const SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_DISCM: [u8; 8] = [57, 139, 47, 123, 216, 80, 223, 10];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SetPreActivationSwapAddressIxArgs {
@@ -13361,16 +12758,16 @@ impl SetPreActivationSwapAddressIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(SetPreActivationSwapAddressIxArgs::deserialize(&mut reader)?))
+        Ok(Self(SetPreActivationSwapAddressIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_DISCM)?;
@@ -13387,8 +12784,7 @@ pub fn set_pre_activation_swap_address_ix_with_program_id(
     keys: SetPreActivationSwapAddressKeys,
     args: SetPreActivationSwapAddressIxArgs,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; SET_PRE_ACTIVATION_SWAP_ADDRESS_IX_ACCOUNTS_LEN] = keys.into();
     let data: SetPreActivationSwapAddressIxData = args.into();
     Ok(Instruction {
         program_id,
@@ -13432,12 +12828,7 @@ pub fn set_pre_activation_swap_address_invoke_signed(
     args: SetPreActivationSwapAddressIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    set_pre_activation_swap_address_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    set_pre_activation_swap_address_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn set_pre_activation_swap_address_verify_account_keys(
     accounts: SetPreActivationSwapAddressAccounts<'_, '_>,
@@ -13491,8 +12882,7 @@ pub struct SetPairStatusPermissionlessKeys {
     pub lb_pair: Pubkey,
     pub creator: Pubkey,
 }
-impl From<SetPairStatusPermissionlessAccounts<'_, '_>>
-for SetPairStatusPermissionlessKeys {
+impl From<SetPairStatusPermissionlessAccounts<'_, '_>> for SetPairStatusPermissionlessKeys {
     fn from(accounts: SetPairStatusPermissionlessAccounts) -> Self {
         Self {
             lb_pair: *accounts.lb_pair.key,
@@ -13501,7 +12891,8 @@ for SetPairStatusPermissionlessKeys {
     }
 }
 impl From<SetPairStatusPermissionlessKeys>
-for [AccountMeta; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN]
+{
     fn from(keys: SetPairStatusPermissionlessKeys) -> Self {
         [
             AccountMeta {
@@ -13518,7 +12909,8 @@ for [AccountMeta; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN]>
-for SetPairStatusPermissionlessKeys {
+    for SetPairStatusPermissionlessKeys
+{
     fn from(pubkeys: [Pubkey; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: pubkeys[0],
@@ -13527,16 +12919,15 @@ for SetPairStatusPermissionlessKeys {
     }
 }
 impl<'info> From<SetPairStatusPermissionlessAccounts<'_, 'info>>
-for [AccountInfo<'info>; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: SetPairStatusPermissionlessAccounts<'_, 'info>) -> Self {
         [accounts.lb_pair.clone(), accounts.creator.clone()]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN]>
-for SetPairStatusPermissionlessAccounts<'me, 'info> {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN]>
+    for SetPairStatusPermissionlessAccounts<'me, 'info>
+{
     fn from(
         arr: &'me [AccountInfo<'info>; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN],
     ) -> Self {
@@ -13546,16 +12937,7 @@ for SetPairStatusPermissionlessAccounts<'me, 'info> {
         }
     }
 }
-pub const SET_PAIR_STATUS_PERMISSIONLESS_IX_DISCM: [u8; 8] = [
-    78,
-    59,
-    152,
-    211,
-    70,
-    183,
-    46,
-    208,
-];
+pub const SET_PAIR_STATUS_PERMISSIONLESS_IX_DISCM: [u8; 8] = [78, 59, 152, 211, 70, 183, 46, 208];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SetPairStatusPermissionlessIxArgs {
@@ -13575,16 +12957,16 @@ impl SetPairStatusPermissionlessIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != SET_PAIR_STATUS_PERMISSIONLESS_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        SET_PAIR_STATUS_PERMISSIONLESS_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {SET_PAIR_STATUS_PERMISSIONLESS_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(SetPairStatusPermissionlessIxArgs::deserialize(&mut reader)?))
+        Ok(Self(SetPairStatusPermissionlessIxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&SET_PAIR_STATUS_PERMISSIONLESS_IX_DISCM)?;
@@ -13601,8 +12983,7 @@ pub fn set_pair_status_permissionless_ix_with_program_id(
     keys: SetPairStatusPermissionlessKeys,
     args: SetPairStatusPermissionlessIxArgs,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; SET_PAIR_STATUS_PERMISSIONLESS_IX_ACCOUNTS_LEN] = keys.into();
     let data: SetPairStatusPermissionlessIxData = args.into();
     Ok(Instruction {
         program_id,
@@ -13646,12 +13027,7 @@ pub fn set_pair_status_permissionless_invoke_signed(
     args: SetPairStatusPermissionlessIxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    set_pair_status_permissionless_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    set_pair_status_permissionless_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn set_pair_status_permissionless_verify_account_keys(
     accounts: SetPairStatusPermissionlessAccounts<'_, '_>,
@@ -13719,8 +13095,7 @@ impl From<InitializeTokenBadgeAccounts<'_, '_>> for InitializeTokenBadgeKeys {
         }
     }
 }
-impl From<InitializeTokenBadgeKeys>
-for [AccountMeta; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN] {
+impl From<InitializeTokenBadgeKeys> for [AccountMeta; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN] {
     fn from(keys: InitializeTokenBadgeKeys) -> Self {
         [
             AccountMeta {
@@ -13746,8 +13121,7 @@ for [AccountMeta; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN]>
-for InitializeTokenBadgeKeys {
+impl From<[Pubkey; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN]> for InitializeTokenBadgeKeys {
     fn from(pubkeys: [Pubkey; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             token_mint: pubkeys[0],
@@ -13758,7 +13132,8 @@ for InitializeTokenBadgeKeys {
     }
 }
 impl<'info> From<InitializeTokenBadgeAccounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializeTokenBadgeAccounts<'_, 'info>) -> Self {
         [
             accounts.token_mint.clone(),
@@ -13769,10 +13144,9 @@ for [AccountInfo<'info>; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN]>
-for InitializeTokenBadgeAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for InitializeTokenBadgeAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; INITIALIZE_TOKEN_BADGE_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             token_mint: &arr[0],
             token_badge: &arr[1],
@@ -13781,16 +13155,7 @@ for InitializeTokenBadgeAccounts<'me, 'info> {
         }
     }
 }
-pub const INITIALIZE_TOKEN_BADGE_IX_DISCM: [u8; 8] = [
-    253,
-    77,
-    205,
-    95,
-    27,
-    224,
-    89,
-    223,
-];
+pub const INITIALIZE_TOKEN_BADGE_IX_DISCM: [u8; 8] = [253, 77, 205, 95, 27, 224, 89, 223];
 #[derive(Clone, Debug, PartialEq)]
 pub struct InitializeTokenBadgeIxData;
 impl InitializeTokenBadgeIxData {
@@ -13800,11 +13165,9 @@ impl InitializeTokenBadgeIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_TOKEN_BADGE_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_TOKEN_BADGE_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_TOKEN_BADGE_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -13831,9 +13194,7 @@ pub fn initialize_token_badge_ix_with_program_id(
         data: InitializeTokenBadgeIxData.try_to_vec()?,
     })
 }
-pub fn initialize_token_badge_ix(
-    keys: InitializeTokenBadgeKeys,
-) -> std::io::Result<Instruction> {
+pub fn initialize_token_badge_ix(keys: InitializeTokenBadgeKeys) -> std::io::Result<Instruction> {
     initialize_token_badge_ix_with_program_id(crate::ID, keys)
 }
 pub fn initialize_token_badge_invoke_with_program_id(
@@ -13922,8 +13283,7 @@ pub struct CreateClaimProtocolFeeOperatorKeys {
     pub admin: Pubkey,
     pub system_program: Pubkey,
 }
-impl From<CreateClaimProtocolFeeOperatorAccounts<'_, '_>>
-for CreateClaimProtocolFeeOperatorKeys {
+impl From<CreateClaimProtocolFeeOperatorAccounts<'_, '_>> for CreateClaimProtocolFeeOperatorKeys {
     fn from(accounts: CreateClaimProtocolFeeOperatorAccounts) -> Self {
         Self {
             claim_fee_operator: *accounts.claim_fee_operator.key,
@@ -13934,7 +13294,8 @@ for CreateClaimProtocolFeeOperatorKeys {
     }
 }
 impl From<CreateClaimProtocolFeeOperatorKeys>
-for [AccountMeta; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]
+{
     fn from(keys: CreateClaimProtocolFeeOperatorKeys) -> Self {
         [
             AccountMeta {
@@ -13961,10 +13322,9 @@ for [AccountMeta; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]>
-for CreateClaimProtocolFeeOperatorKeys {
-    fn from(
-        pubkeys: [Pubkey; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for CreateClaimProtocolFeeOperatorKeys
+{
+    fn from(pubkeys: [Pubkey; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             claim_fee_operator: pubkeys[0],
             operator: pubkeys[1],
@@ -13974,7 +13334,8 @@ for CreateClaimProtocolFeeOperatorKeys {
     }
 }
 impl<'info> From<CreateClaimProtocolFeeOperatorAccounts<'_, 'info>>
-for [AccountInfo<'info>; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: CreateClaimProtocolFeeOperatorAccounts<'_, 'info>) -> Self {
         [
             accounts.claim_fee_operator.clone(),
@@ -13984,15 +13345,11 @@ for [AccountInfo<'info>; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]>
-for CreateClaimProtocolFeeOperatorAccounts<'me, 'info> {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]>
+    for CreateClaimProtocolFeeOperatorAccounts<'me, 'info>
+{
     fn from(
-        arr: &'me [AccountInfo<
-            'info,
-        >; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN],
+        arr: &'me [AccountInfo<'info>; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN],
     ) -> Self {
         Self {
             claim_fee_operator: &arr[0],
@@ -14002,16 +13359,8 @@ for CreateClaimProtocolFeeOperatorAccounts<'me, 'info> {
         }
     }
 }
-pub const CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM: [u8; 8] = [
-    51,
-    19,
-    150,
-    252,
-    105,
-    157,
-    48,
-    91,
-];
+pub const CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM: [u8; 8] =
+    [51, 19, 150, 252, 105, 157, 48, 91];
 #[derive(Clone, Debug, PartialEq)]
 pub struct CreateClaimProtocolFeeOperatorIxData;
 impl CreateClaimProtocolFeeOperatorIxData {
@@ -14021,11 +13370,9 @@ impl CreateClaimProtocolFeeOperatorIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -14045,8 +13392,7 @@ pub fn create_claim_protocol_fee_operator_ix_with_program_id(
     program_id: Pubkey,
     keys: CreateClaimProtocolFeeOperatorKeys,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; CREATE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] = keys.into();
     Ok(Instruction {
         program_id,
         accounts: Vec::from(metas),
@@ -14084,11 +13430,7 @@ pub fn create_claim_protocol_fee_operator_invoke_signed(
     accounts: CreateClaimProtocolFeeOperatorAccounts<'_, '_>,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    create_claim_protocol_fee_operator_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        seeds,
-    )
+    create_claim_protocol_fee_operator_invoke_signed_with_program_id(crate::ID, accounts, seeds)
 }
 pub fn create_claim_protocol_fee_operator_verify_account_keys(
     accounts: CreateClaimProtocolFeeOperatorAccounts<'_, '_>,
@@ -14146,8 +13488,7 @@ pub struct CloseClaimProtocolFeeOperatorKeys {
     pub rent_receiver: Pubkey,
     pub admin: Pubkey,
 }
-impl From<CloseClaimProtocolFeeOperatorAccounts<'_, '_>>
-for CloseClaimProtocolFeeOperatorKeys {
+impl From<CloseClaimProtocolFeeOperatorAccounts<'_, '_>> for CloseClaimProtocolFeeOperatorKeys {
     fn from(accounts: CloseClaimProtocolFeeOperatorAccounts) -> Self {
         Self {
             claim_fee_operator: *accounts.claim_fee_operator.key,
@@ -14157,7 +13498,8 @@ for CloseClaimProtocolFeeOperatorKeys {
     }
 }
 impl From<CloseClaimProtocolFeeOperatorKeys>
-for [AccountMeta; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]
+{
     fn from(keys: CloseClaimProtocolFeeOperatorKeys) -> Self {
         [
             AccountMeta {
@@ -14179,10 +13521,9 @@ for [AccountMeta; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]>
-for CloseClaimProtocolFeeOperatorKeys {
-    fn from(
-        pubkeys: [Pubkey; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for CloseClaimProtocolFeeOperatorKeys
+{
+    fn from(pubkeys: [Pubkey; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             claim_fee_operator: pubkeys[0],
             rent_receiver: pubkeys[1],
@@ -14191,7 +13532,8 @@ for CloseClaimProtocolFeeOperatorKeys {
     }
 }
 impl<'info> From<CloseClaimProtocolFeeOperatorAccounts<'_, 'info>>
-for [AccountInfo<'info>; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: CloseClaimProtocolFeeOperatorAccounts<'_, 'info>) -> Self {
         [
             accounts.claim_fee_operator.clone(),
@@ -14200,11 +13542,9 @@ for [AccountInfo<'info>; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]>
-for CloseClaimProtocolFeeOperatorAccounts<'me, 'info> {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN]>
+    for CloseClaimProtocolFeeOperatorAccounts<'me, 'info>
+{
     fn from(
         arr: &'me [AccountInfo<'info>; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN],
     ) -> Self {
@@ -14215,16 +13555,7 @@ for CloseClaimProtocolFeeOperatorAccounts<'me, 'info> {
         }
     }
 }
-pub const CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM: [u8; 8] = [
-    8,
-    41,
-    87,
-    35,
-    80,
-    48,
-    121,
-    26,
-];
+pub const CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM: [u8; 8] = [8, 41, 87, 35, 80, 48, 121, 26];
 #[derive(Clone, Debug, PartialEq)]
 pub struct CloseClaimProtocolFeeOperatorIxData;
 impl CloseClaimProtocolFeeOperatorIxData {
@@ -14234,11 +13565,9 @@ impl CloseClaimProtocolFeeOperatorIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -14258,8 +13587,7 @@ pub fn close_claim_protocol_fee_operator_ix_with_program_id(
     program_id: Pubkey,
     keys: CloseClaimProtocolFeeOperatorKeys,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; CLOSE_CLAIM_PROTOCOL_FEE_OPERATOR_IX_ACCOUNTS_LEN] = keys.into();
     Ok(Instruction {
         program_id,
         accounts: Vec::from(metas),
@@ -14297,11 +13625,7 @@ pub fn close_claim_protocol_fee_operator_invoke_signed(
     accounts: CloseClaimProtocolFeeOperatorAccounts<'_, '_>,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    close_claim_protocol_fee_operator_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        seeds,
-    )
+    close_claim_protocol_fee_operator_invoke_signed_with_program_id(crate::ID, accounts, seeds)
 }
 pub fn close_claim_protocol_fee_operator_verify_account_keys(
     accounts: CloseClaimProtocolFeeOperatorAccounts<'_, '_>,
@@ -14358,8 +13682,7 @@ pub struct InitializePresetParameter2Keys {
     pub admin: Pubkey,
     pub system_program: Pubkey,
 }
-impl From<InitializePresetParameter2Accounts<'_, '_>>
-for InitializePresetParameter2Keys {
+impl From<InitializePresetParameter2Accounts<'_, '_>> for InitializePresetParameter2Keys {
     fn from(accounts: InitializePresetParameter2Accounts) -> Self {
         Self {
             preset_parameter: *accounts.preset_parameter.key,
@@ -14369,7 +13692,8 @@ for InitializePresetParameter2Keys {
     }
 }
 impl From<InitializePresetParameter2Keys>
-for [AccountMeta; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]
+{
     fn from(keys: InitializePresetParameter2Keys) -> Self {
         [
             AccountMeta {
@@ -14391,7 +13715,8 @@ for [AccountMeta; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]>
-for InitializePresetParameter2Keys {
+    for InitializePresetParameter2Keys
+{
     fn from(pubkeys: [Pubkey; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             preset_parameter: pubkeys[0],
@@ -14401,7 +13726,8 @@ for InitializePresetParameter2Keys {
     }
 }
 impl<'info> From<InitializePresetParameter2Accounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializePresetParameter2Accounts<'_, 'info>) -> Self {
         [
             accounts.preset_parameter.clone(),
@@ -14410,14 +13736,10 @@ for [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]>
-for InitializePresetParameter2Accounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]>
+    for InitializePresetParameter2Accounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; INITIALIZE_PRESET_PARAMETER2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             preset_parameter: &arr[0],
             admin: &arr[1],
@@ -14425,16 +13747,7 @@ for InitializePresetParameter2Accounts<'me, 'info> {
         }
     }
 }
-pub const INITIALIZE_PRESET_PARAMETER2_IX_DISCM: [u8; 8] = [
-    184,
-    7,
-    240,
-    171,
-    103,
-    47,
-    183,
-    121,
-];
+pub const INITIALIZE_PRESET_PARAMETER2_IX_DISCM: [u8; 8] = [184, 7, 240, 171, 103, 47, 183, 121];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct InitializePresetParameter2IxArgs {
@@ -14454,16 +13767,16 @@ impl InitializePresetParameter2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_PRESET_PARAMETER2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_PRESET_PARAMETER2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_PRESET_PARAMETER2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(InitializePresetParameter2IxArgs::deserialize(&mut reader)?))
+        Ok(Self(InitializePresetParameter2IxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&INITIALIZE_PRESET_PARAMETER2_IX_DISCM)?;
@@ -14524,12 +13837,7 @@ pub fn initialize_preset_parameter2_invoke_signed(
     args: InitializePresetParameter2IxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    initialize_preset_parameter2_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    initialize_preset_parameter2_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn initialize_preset_parameter2_verify_account_keys(
     accounts: InitializePresetParameter2Accounts<'_, '_>,
@@ -14743,7 +14051,8 @@ impl From<[Pubkey; INITIALIZE_LB_PAIR2_IX_ACCOUNTS_LEN]> for InitializeLbPair2Ke
     }
 }
 impl<'info> From<InitializeLbPair2Accounts<'_, 'info>>
-for [AccountInfo<'info>; INITIALIZE_LB_PAIR2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; INITIALIZE_LB_PAIR2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: InitializeLbPair2Accounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -14766,10 +14075,9 @@ for [AccountInfo<'info>; INITIALIZE_LB_PAIR2_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; INITIALIZE_LB_PAIR2_IX_ACCOUNTS_LEN]>
-for InitializeLbPair2Accounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; INITIALIZE_LB_PAIR2_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for InitializeLbPair2Accounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; INITIALIZE_LB_PAIR2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             bin_array_bitmap_extension: &arr[1],
@@ -14810,11 +14118,9 @@ impl InitializeLbPair2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_LB_PAIR2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_LB_PAIR2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_LB_PAIR2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -14888,7 +14194,10 @@ pub fn initialize_lb_pair2_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.token_mint_x.key, keys.token_mint_x),
         (*accounts.token_mint_y.key, keys.token_mint_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -14986,7 +14295,8 @@ pub struct InitializeCustomizablePermissionlessLbPair2Keys {
     pub program: Pubkey,
 }
 impl From<InitializeCustomizablePermissionlessLbPair2Accounts<'_, '_>>
-for InitializeCustomizablePermissionlessLbPair2Keys {
+    for InitializeCustomizablePermissionlessLbPair2Keys
+{
     fn from(accounts: InitializeCustomizablePermissionlessLbPair2Accounts) -> Self {
         Self {
             lb_pair: *accounts.lb_pair.key,
@@ -15010,7 +14320,8 @@ for InitializeCustomizablePermissionlessLbPair2Keys {
     }
 }
 impl From<InitializeCustomizablePermissionlessLbPair2Keys>
-for [AccountMeta; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN]
+{
     fn from(keys: InitializeCustomizablePermissionlessLbPair2Keys) -> Self {
         [
             AccountMeta {
@@ -15102,7 +14413,8 @@ for [AccountMeta; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LE
     }
 }
 impl From<[Pubkey; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN]>
-for InitializeCustomizablePermissionlessLbPair2Keys {
+    for InitializeCustomizablePermissionlessLbPair2Keys
+{
     fn from(
         pubkeys: [Pubkey; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN],
     ) -> Self {
@@ -15128,12 +14440,9 @@ for InitializeCustomizablePermissionlessLbPair2Keys {
     }
 }
 impl<'info> From<InitializeCustomizablePermissionlessLbPair2Accounts<'_, 'info>>
-for [AccountInfo<
-    'info,
->; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN] {
-    fn from(
-        accounts: InitializeCustomizablePermissionlessLbPair2Accounts<'_, 'info>,
-    ) -> Self {
+    for [AccountInfo<'info>; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN]
+{
+    fn from(accounts: InitializeCustomizablePermissionlessLbPair2Accounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
             accounts.bin_array_bitmap_extension.clone(),
@@ -15155,18 +14464,13 @@ for [AccountInfo<
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<
-    &'me [AccountInfo<
-        'info,
-    >; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN],
-> for InitializeCustomizablePermissionlessLbPair2Accounts<'me, 'info> {
+impl<'me, 'info>
+    From<&'me [AccountInfo<'info>; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN]>
+    for InitializeCustomizablePermissionlessLbPair2Accounts<'me, 'info>
+{
     fn from(
-        arr: &'me [AccountInfo<
-            'info,
-        >; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN],
+        arr: &'me [AccountInfo<'info>;
+                 INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN],
     ) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -15189,16 +14493,8 @@ impl<
         }
     }
 }
-pub const INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_DISCM: [u8; 8] = [
-    243,
-    73,
-    129,
-    126,
-    51,
-    19,
-    241,
-    107,
-];
+pub const INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_DISCM: [u8; 8] =
+    [243, 73, 129, 126, 51, 19, 241, 107];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct InitializeCustomizablePermissionlessLbPair2IxArgs {
@@ -15209,7 +14505,8 @@ pub struct InitializeCustomizablePermissionlessLbPair2IxData(
     pub InitializeCustomizablePermissionlessLbPair2IxArgs,
 );
 impl From<InitializeCustomizablePermissionlessLbPair2IxArgs>
-for InitializeCustomizablePermissionlessLbPair2IxData {
+    for InitializeCustomizablePermissionlessLbPair2IxData
+{
     fn from(args: InitializeCustomizablePermissionlessLbPair2IxArgs) -> Self {
         Self(args)
     }
@@ -15221,23 +14518,16 @@ impl InitializeCustomizablePermissionlessLbPair2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_DISCM,
-                        maybe_discm
+                        "discm does not match. Expected: {INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(
-            Self(
-                InitializeCustomizablePermissionlessLbPair2IxArgs::deserialize(
-                    &mut reader,
-                )?,
-            ),
-        )
+        Ok(Self(
+            InitializeCustomizablePermissionlessLbPair2IxArgs::deserialize(&mut reader)?,
+        ))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_DISCM)?;
@@ -15254,8 +14544,8 @@ pub fn initialize_customizable_permissionless_lb_pair2_ix_with_program_id(
     keys: InitializeCustomizablePermissionlessLbPair2Keys,
     args: InitializeCustomizablePermissionlessLbPair2IxArgs,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; INITIALIZE_CUSTOMIZABLE_PERMISSIONLESS_LB_PAIR2_IX_ACCOUNTS_LEN] =
+        keys.into();
     let data: InitializeCustomizablePermissionlessLbPair2IxData = args.into();
     Ok(Instruction {
         program_id,
@@ -15267,11 +14557,7 @@ pub fn initialize_customizable_permissionless_lb_pair2_ix(
     keys: InitializeCustomizablePermissionlessLbPair2Keys,
     args: InitializeCustomizablePermissionlessLbPair2IxArgs,
 ) -> std::io::Result<Instruction> {
-    initialize_customizable_permissionless_lb_pair2_ix_with_program_id(
-        crate::ID,
-        keys,
-        args,
-    )
+    initialize_customizable_permissionless_lb_pair2_ix_with_program_id(crate::ID, keys, args)
 }
 pub fn initialize_customizable_permissionless_lb_pair2_invoke_with_program_id(
     program_id: Pubkey,
@@ -15279,11 +14565,8 @@ pub fn initialize_customizable_permissionless_lb_pair2_invoke_with_program_id(
     args: InitializeCustomizablePermissionlessLbPair2IxArgs,
 ) -> ProgramResult {
     let keys: InitializeCustomizablePermissionlessLbPair2Keys = accounts.into();
-    let ix = initialize_customizable_permissionless_lb_pair2_ix_with_program_id(
-        program_id,
-        keys,
-        args,
-    )?;
+    let ix =
+        initialize_customizable_permissionless_lb_pair2_ix_with_program_id(program_id, keys, args)?;
     invoke_instruction(&ix, accounts)
 }
 pub fn initialize_customizable_permissionless_lb_pair2_invoke(
@@ -15303,11 +14586,8 @@ pub fn initialize_customizable_permissionless_lb_pair2_invoke_signed_with_progra
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
     let keys: InitializeCustomizablePermissionlessLbPair2Keys = accounts.into();
-    let ix = initialize_customizable_permissionless_lb_pair2_ix_with_program_id(
-        program_id,
-        keys,
-        args,
-    )?;
+    let ix =
+        initialize_customizable_permissionless_lb_pair2_ix_with_program_id(program_id, keys, args)?;
     invoke_instruction_signed(&ix, accounts, seeds)
 }
 pub fn initialize_customizable_permissionless_lb_pair2_invoke_signed(
@@ -15328,7 +14608,10 @@ pub fn initialize_customizable_permissionless_lb_pair2_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.token_mint_x.key, keys.token_mint_x),
         (*accounts.token_mint_y.key, keys.token_mint_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -15351,10 +14634,7 @@ pub fn initialize_customizable_permissionless_lb_pair2_verify_account_keys(
     }
     Ok(())
 }
-pub fn initialize_customizable_permissionless_lb_pair2_verify_writable_privileges<
-    'me,
-    'info,
->(
+pub fn initialize_customizable_permissionless_lb_pair2_verify_writable_privileges<'me, 'info>(
     accounts: InitializeCustomizablePermissionlessLbPair2Accounts<'me, 'info>,
 ) -> Result<(), (&'me AccountInfo<'info>, ProgramError)> {
     for should_be_writable in [
@@ -15371,10 +14651,7 @@ pub fn initialize_customizable_permissionless_lb_pair2_verify_writable_privilege
     }
     Ok(())
 }
-pub fn initialize_customizable_permissionless_lb_pair2_verify_signer_privileges<
-    'me,
-    'info,
->(
+pub fn initialize_customizable_permissionless_lb_pair2_verify_signer_privileges<'me, 'info>(
     accounts: InitializeCustomizablePermissionlessLbPair2Accounts<'me, 'info>,
 ) -> Result<(), (&'me AccountInfo<'info>, ProgramError)> {
     for should_be_signer in [accounts.funder] {
@@ -15384,15 +14661,10 @@ pub fn initialize_customizable_permissionless_lb_pair2_verify_signer_privileges<
     }
     Ok(())
 }
-pub fn initialize_customizable_permissionless_lb_pair2_verify_account_privileges<
-    'me,
-    'info,
->(
+pub fn initialize_customizable_permissionless_lb_pair2_verify_account_privileges<'me, 'info>(
     accounts: InitializeCustomizablePermissionlessLbPair2Accounts<'me, 'info>,
 ) -> Result<(), (&'me AccountInfo<'info>, ProgramError)> {
-    initialize_customizable_permissionless_lb_pair2_verify_writable_privileges(
-        accounts,
-    )?;
+    initialize_customizable_permissionless_lb_pair2_verify_writable_privileges(accounts)?;
     initialize_customizable_permissionless_lb_pair2_verify_signer_privileges(accounts)?;
     Ok(())
 }
@@ -15548,7 +14820,8 @@ impl From<[Pubkey; CLAIM_FEE2_IX_ACCOUNTS_LEN]> for ClaimFee2Keys {
     }
 }
 impl<'info> From<ClaimFee2Accounts<'_, 'info>>
-for [AccountInfo<'info>; CLAIM_FEE2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; CLAIM_FEE2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: ClaimFee2Accounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -15569,7 +14842,8 @@ for [AccountInfo<'info>; CLAIM_FEE2_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; CLAIM_FEE2_IX_ACCOUNTS_LEN]>
-for ClaimFee2Accounts<'me, 'info> {
+    for ClaimFee2Accounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; CLAIM_FEE2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -15611,11 +14885,9 @@ impl ClaimFee2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != CLAIM_FEE2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        CLAIM_FEE2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {CLAIM_FEE2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -15645,10 +14917,7 @@ pub fn claim_fee2_ix_with_program_id(
         data: data.try_to_vec()?,
     })
 }
-pub fn claim_fee2_ix(
-    keys: ClaimFee2Keys,
-    args: ClaimFee2IxArgs,
-) -> std::io::Result<Instruction> {
+pub fn claim_fee2_ix(keys: ClaimFee2Keys, args: ClaimFee2IxArgs) -> std::io::Result<Instruction> {
     claim_fee2_ix_with_program_id(crate::ID, keys, args)
 }
 pub fn claim_fee2_invoke_with_program_id(
@@ -15859,7 +15128,8 @@ impl From<[Pubkey; CLAIM_REWARD2_IX_ACCOUNTS_LEN]> for ClaimReward2Keys {
     }
 }
 impl<'info> From<ClaimReward2Accounts<'_, 'info>>
-for [AccountInfo<'info>; CLAIM_REWARD2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; CLAIM_REWARD2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: ClaimReward2Accounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -15876,7 +15146,8 @@ for [AccountInfo<'info>; CLAIM_REWARD2_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; CLAIM_REWARD2_IX_ACCOUNTS_LEN]>
-for ClaimReward2Accounts<'me, 'info> {
+    for ClaimReward2Accounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; CLAIM_REWARD2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -15915,11 +15186,9 @@ impl ClaimReward2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != CLAIM_REWARD2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        CLAIM_REWARD2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {CLAIM_REWARD2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -16193,7 +15462,8 @@ impl From<[Pubkey; ADD_LIQUIDITY2_IX_ACCOUNTS_LEN]> for AddLiquidity2Keys {
     }
 }
 impl<'info> From<AddLiquidity2Accounts<'_, 'info>>
-for [AccountInfo<'info>; ADD_LIQUIDITY2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; ADD_LIQUIDITY2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: AddLiquidity2Accounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -16214,7 +15484,8 @@ for [AccountInfo<'info>; ADD_LIQUIDITY2_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY2_IX_ACCOUNTS_LEN]>
-for AddLiquidity2Accounts<'me, 'info> {
+    for AddLiquidity2Accounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
@@ -16255,11 +15526,9 @@ impl AddLiquidity2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != ADD_LIQUIDITY2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        ADD_LIQUIDITY2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {ADD_LIQUIDITY2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -16334,7 +15603,10 @@ pub fn add_liquidity2_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token_x.key, keys.user_token_x),
         (*accounts.user_token_y.key, keys.user_token_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -16444,7 +15716,8 @@ impl From<AddLiquidityByStrategy2Accounts<'_, '_>> for AddLiquidityByStrategy2Ke
     }
 }
 impl From<AddLiquidityByStrategy2Keys>
-for [AccountMeta; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN]
+{
     fn from(keys: AddLiquidityByStrategy2Keys) -> Self {
         [
             AccountMeta {
@@ -16520,8 +15793,7 @@ for [AccountMeta; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN]>
-for AddLiquidityByStrategy2Keys {
+impl From<[Pubkey; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN]> for AddLiquidityByStrategy2Keys {
     fn from(pubkeys: [Pubkey; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
@@ -16542,7 +15814,8 @@ for AddLiquidityByStrategy2Keys {
     }
 }
 impl<'info> From<AddLiquidityByStrategy2Accounts<'_, 'info>>
-for [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: AddLiquidityByStrategy2Accounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -16562,14 +15835,10 @@ for [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN]>
-for AddLiquidityByStrategy2Accounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN]>
+    for AddLiquidityByStrategy2Accounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_BY_STRATEGY2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
             lb_pair: &arr[1],
@@ -16588,16 +15857,7 @@ for AddLiquidityByStrategy2Accounts<'me, 'info> {
         }
     }
 }
-pub const ADD_LIQUIDITY_BY_STRATEGY2_IX_DISCM: [u8; 8] = [
-    3,
-    221,
-    149,
-    218,
-    111,
-    141,
-    118,
-    213,
-];
+pub const ADD_LIQUIDITY_BY_STRATEGY2_IX_DISCM: [u8; 8] = [3, 221, 149, 218, 111, 141, 118, 213];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AddLiquidityByStrategy2IxArgs {
@@ -16618,16 +15878,16 @@ impl AddLiquidityByStrategy2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != ADD_LIQUIDITY_BY_STRATEGY2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        ADD_LIQUIDITY_BY_STRATEGY2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {ADD_LIQUIDITY_BY_STRATEGY2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(AddLiquidityByStrategy2IxArgs::deserialize(&mut reader)?))
+        Ok(Self(AddLiquidityByStrategy2IxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&ADD_LIQUIDITY_BY_STRATEGY2_IX_DISCM)?;
@@ -16688,12 +15948,7 @@ pub fn add_liquidity_by_strategy2_invoke_signed(
     args: AddLiquidityByStrategy2IxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    add_liquidity_by_strategy2_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    add_liquidity_by_strategy2_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn add_liquidity_by_strategy2_verify_account_keys(
     accounts: AddLiquidityByStrategy2Accounts<'_, '_>,
@@ -16702,7 +15957,10 @@ pub fn add_liquidity_by_strategy2_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token_x.key, keys.user_token_x),
         (*accounts.user_token_y.key, keys.user_token_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -16783,8 +16041,7 @@ pub struct AddLiquidityOneSidePrecise2Keys {
     pub event_authority: Pubkey,
     pub program: Pubkey,
 }
-impl From<AddLiquidityOneSidePrecise2Accounts<'_, '_>>
-for AddLiquidityOneSidePrecise2Keys {
+impl From<AddLiquidityOneSidePrecise2Accounts<'_, '_>> for AddLiquidityOneSidePrecise2Keys {
     fn from(accounts: AddLiquidityOneSidePrecise2Accounts) -> Self {
         Self {
             position: *accounts.position.key,
@@ -16801,7 +16058,8 @@ for AddLiquidityOneSidePrecise2Keys {
     }
 }
 impl From<AddLiquidityOneSidePrecise2Keys>
-for [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN]
+{
     fn from(keys: AddLiquidityOneSidePrecise2Keys) -> Self {
         [
             AccountMeta {
@@ -16858,7 +16116,8 @@ for [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN] {
     }
 }
 impl From<[Pubkey; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN]>
-for AddLiquidityOneSidePrecise2Keys {
+    for AddLiquidityOneSidePrecise2Keys
+{
     fn from(pubkeys: [Pubkey; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
@@ -16875,7 +16134,8 @@ for AddLiquidityOneSidePrecise2Keys {
     }
 }
 impl<'info> From<AddLiquidityOneSidePrecise2Accounts<'_, 'info>>
-for [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: AddLiquidityOneSidePrecise2Accounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -16891,11 +16151,9 @@ for [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN]>
-for AddLiquidityOneSidePrecise2Accounts<'me, 'info> {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN]>
+    for AddLiquidityOneSidePrecise2Accounts<'me, 'info>
+{
     fn from(
         arr: &'me [AccountInfo<'info>; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN],
     ) -> Self {
@@ -16913,16 +16171,7 @@ for AddLiquidityOneSidePrecise2Accounts<'me, 'info> {
         }
     }
 }
-pub const ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_DISCM: [u8; 8] = [
-    33,
-    51,
-    163,
-    201,
-    117,
-    98,
-    125,
-    231,
-];
+pub const ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_DISCM: [u8; 8] = [33, 51, 163, 201, 117, 98, 125, 231];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AddLiquidityOneSidePrecise2IxArgs {
@@ -16943,16 +16192,16 @@ impl AddLiquidityOneSidePrecise2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(AddLiquidityOneSidePrecise2IxArgs::deserialize(&mut reader)?))
+        Ok(Self(AddLiquidityOneSidePrecise2IxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_DISCM)?;
@@ -16969,8 +16218,7 @@ pub fn add_liquidity_one_side_precise2_ix_with_program_id(
     keys: AddLiquidityOneSidePrecise2Keys,
     args: AddLiquidityOneSidePrecise2IxArgs,
 ) -> std::io::Result<Instruction> {
-    let metas: [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN] = keys
-        .into();
+    let metas: [AccountMeta; ADD_LIQUIDITY_ONE_SIDE_PRECISE2_IX_ACCOUNTS_LEN] = keys.into();
     let data: AddLiquidityOneSidePrecise2IxData = args.into();
     Ok(Instruction {
         program_id,
@@ -17014,12 +16262,7 @@ pub fn add_liquidity_one_side_precise2_invoke_signed(
     args: AddLiquidityOneSidePrecise2IxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    add_liquidity_one_side_precise2_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    add_liquidity_one_side_precise2_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn add_liquidity_one_side_precise2_verify_account_keys(
     accounts: AddLiquidityOneSidePrecise2Accounts<'_, '_>,
@@ -17028,7 +16271,10 @@ pub fn add_liquidity_one_side_precise2_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token.key, keys.user_token),
         (*accounts.reserve.key, keys.reserve),
         (*accounts.token_mint.key, keys.token_mint),
@@ -17237,7 +16483,8 @@ impl From<[Pubkey; REMOVE_LIQUIDITY2_IX_ACCOUNTS_LEN]> for RemoveLiquidity2Keys 
     }
 }
 impl<'info> From<RemoveLiquidity2Accounts<'_, 'info>>
-for [AccountInfo<'info>; REMOVE_LIQUIDITY2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; REMOVE_LIQUIDITY2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: RemoveLiquidity2Accounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -17259,7 +16506,8 @@ for [AccountInfo<'info>; REMOVE_LIQUIDITY2_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; REMOVE_LIQUIDITY2_IX_ACCOUNTS_LEN]>
-for RemoveLiquidity2Accounts<'me, 'info> {
+    for RemoveLiquidity2Accounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; REMOVE_LIQUIDITY2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
@@ -17301,11 +16549,9 @@ impl RemoveLiquidity2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != REMOVE_LIQUIDITY2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        REMOVE_LIQUIDITY2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {REMOVE_LIQUIDITY2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -17380,7 +16626,10 @@ pub fn remove_liquidity2_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token_x.key, keys.user_token_x),
         (*accounts.user_token_y.key, keys.user_token_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -17494,7 +16743,8 @@ impl From<RemoveLiquidityByRange2Accounts<'_, '_>> for RemoveLiquidityByRange2Ke
     }
 }
 impl From<RemoveLiquidityByRange2Keys>
-for [AccountMeta; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN] {
+    for [AccountMeta; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN]
+{
     fn from(keys: RemoveLiquidityByRange2Keys) -> Self {
         [
             AccountMeta {
@@ -17575,8 +16825,7 @@ for [AccountMeta; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN]>
-for RemoveLiquidityByRange2Keys {
+impl From<[Pubkey; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN]> for RemoveLiquidityByRange2Keys {
     fn from(pubkeys: [Pubkey; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
@@ -17598,7 +16847,8 @@ for RemoveLiquidityByRange2Keys {
     }
 }
 impl<'info> From<RemoveLiquidityByRange2Accounts<'_, 'info>>
-for [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: RemoveLiquidityByRange2Accounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -17619,14 +16869,10 @@ for [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl<
-    'me,
-    'info,
-> From<&'me [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN]>
-for RemoveLiquidityByRange2Accounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN],
-    ) -> Self {
+impl<'me, 'info> From<&'me [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN]>
+    for RemoveLiquidityByRange2Accounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; REMOVE_LIQUIDITY_BY_RANGE2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
             lb_pair: &arr[1],
@@ -17646,16 +16892,7 @@ for RemoveLiquidityByRange2Accounts<'me, 'info> {
         }
     }
 }
-pub const REMOVE_LIQUIDITY_BY_RANGE2_IX_DISCM: [u8; 8] = [
-    204,
-    2,
-    195,
-    145,
-    53,
-    145,
-    145,
-    205,
-];
+pub const REMOVE_LIQUIDITY_BY_RANGE2_IX_DISCM: [u8; 8] = [204, 2, 195, 145, 53, 145, 145, 205];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct RemoveLiquidityByRange2IxArgs {
@@ -17678,16 +16915,16 @@ impl RemoveLiquidityByRange2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != REMOVE_LIQUIDITY_BY_RANGE2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        REMOVE_LIQUIDITY_BY_RANGE2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {REMOVE_LIQUIDITY_BY_RANGE2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
         }
-        Ok(Self(RemoveLiquidityByRange2IxArgs::deserialize(&mut reader)?))
+        Ok(Self(RemoveLiquidityByRange2IxArgs::deserialize(
+            &mut reader,
+        )?))
     }
     pub fn serialize<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
         writer.write_all(&REMOVE_LIQUIDITY_BY_RANGE2_IX_DISCM)?;
@@ -17748,12 +16985,7 @@ pub fn remove_liquidity_by_range2_invoke_signed(
     args: RemoveLiquidityByRange2IxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    remove_liquidity_by_range2_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    remove_liquidity_by_range2_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn remove_liquidity_by_range2_verify_account_keys(
     accounts: RemoveLiquidityByRange2Accounts<'_, '_>,
@@ -17762,7 +16994,10 @@ pub fn remove_liquidity_by_range2_verify_account_keys(
     for (actual, expected) in [
         (*accounts.position.key, keys.position),
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.user_token_x.key, keys.user_token_x),
         (*accounts.user_token_y.key, keys.user_token_y),
         (*accounts.reserve_x.key, keys.reserve_x),
@@ -17986,8 +17221,7 @@ impl From<[Pubkey; SWAP2_IX_ACCOUNTS_LEN]> for Swap2Keys {
         }
     }
 }
-impl<'info> From<Swap2Accounts<'_, 'info>>
-for [AccountInfo<'info>; SWAP2_IX_ACCOUNTS_LEN] {
+impl<'info> From<Swap2Accounts<'_, 'info>> for [AccountInfo<'info>; SWAP2_IX_ACCOUNTS_LEN] {
     fn from(accounts: Swap2Accounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -18010,7 +17244,8 @@ for [AccountInfo<'info>; SWAP2_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; SWAP2_IX_ACCOUNTS_LEN]>
-for Swap2Accounts<'me, 'info> {
+    for Swap2Accounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; SWAP2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -18053,15 +17288,9 @@ impl Swap2IxData {
         let mut maybe_discm = [0u8; 8];
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != SWAP2_IX_DISCM {
-            return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        SWAP2_IX_DISCM, maybe_discm
-                    ),
-                ),
-            );
+            return Err(std::io::Error::other(format!(
+                "discm does not match. Expected: {SWAP2_IX_DISCM:?}. Received: {maybe_discm:?}"
+            )));
         }
         Ok(Self(Swap2IxArgs::deserialize(&mut reader)?))
     }
@@ -18100,10 +17329,7 @@ pub fn swap2_invoke_with_program_id(
     let ix = swap2_ix_with_program_id(program_id, keys, args)?;
     invoke_instruction(&ix, accounts)
 }
-pub fn swap2_invoke(
-    accounts: Swap2Accounts<'_, '_>,
-    args: Swap2IxArgs,
-) -> ProgramResult {
+pub fn swap2_invoke(accounts: Swap2Accounts<'_, '_>, args: Swap2IxArgs) -> ProgramResult {
     swap2_invoke_with_program_id(crate::ID, accounts, args)
 }
 pub fn swap2_invoke_signed_with_program_id(
@@ -18129,7 +17355,10 @@ pub fn swap2_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.reserve_x.key, keys.reserve_x),
         (*accounts.reserve_y.key, keys.reserve_y),
         (*accounts.user_token_in.key, keys.user_token_in),
@@ -18356,7 +17585,8 @@ impl From<[Pubkey; SWAP_EXACT_OUT2_IX_ACCOUNTS_LEN]> for SwapExactOut2Keys {
     }
 }
 impl<'info> From<SwapExactOut2Accounts<'_, 'info>>
-for [AccountInfo<'info>; SWAP_EXACT_OUT2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; SWAP_EXACT_OUT2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: SwapExactOut2Accounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -18379,7 +17609,8 @@ for [AccountInfo<'info>; SWAP_EXACT_OUT2_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; SWAP_EXACT_OUT2_IX_ACCOUNTS_LEN]>
-for SwapExactOut2Accounts<'me, 'info> {
+    for SwapExactOut2Accounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; SWAP_EXACT_OUT2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
@@ -18423,11 +17654,9 @@ impl SwapExactOut2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != SWAP_EXACT_OUT2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        SWAP_EXACT_OUT2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {SWAP_EXACT_OUT2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -18501,7 +17730,10 @@ pub fn swap_exact_out2_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.reserve_x.key, keys.reserve_x),
         (*accounts.reserve_y.key, keys.reserve_y),
         (*accounts.user_token_in.key, keys.user_token_in),
@@ -18619,8 +17851,7 @@ impl From<SwapWithPriceImpact2Accounts<'_, '_>> for SwapWithPriceImpact2Keys {
         }
     }
 }
-impl From<SwapWithPriceImpact2Keys>
-for [AccountMeta; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN] {
+impl From<SwapWithPriceImpact2Keys> for [AccountMeta; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN] {
     fn from(keys: SwapWithPriceImpact2Keys) -> Self {
         [
             AccountMeta {
@@ -18706,8 +17937,7 @@ for [AccountMeta; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN]>
-for SwapWithPriceImpact2Keys {
+impl From<[Pubkey; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN]> for SwapWithPriceImpact2Keys {
     fn from(pubkeys: [Pubkey; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: pubkeys[0],
@@ -18730,7 +17960,8 @@ for SwapWithPriceImpact2Keys {
     }
 }
 impl<'info> From<SwapWithPriceImpact2Accounts<'_, 'info>>
-for [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: SwapWithPriceImpact2Accounts<'_, 'info>) -> Self {
         [
             accounts.lb_pair.clone(),
@@ -18753,10 +17984,9 @@ for [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN]>
-for SwapWithPriceImpact2Accounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for SwapWithPriceImpact2Accounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; SWAP_WITH_PRICE_IMPACT2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             lb_pair: &arr[0],
             bin_array_bitmap_extension: &arr[1],
@@ -18777,16 +18007,7 @@ for SwapWithPriceImpact2Accounts<'me, 'info> {
         }
     }
 }
-pub const SWAP_WITH_PRICE_IMPACT2_IX_DISCM: [u8; 8] = [
-    74,
-    98,
-    192,
-    214,
-    177,
-    51,
-    75,
-    51,
-];
+pub const SWAP_WITH_PRICE_IMPACT2_IX_DISCM: [u8; 8] = [74, 98, 192, 214, 177, 51, 75, 51];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SwapWithPriceImpact2IxArgs {
@@ -18809,11 +18030,9 @@ impl SwapWithPriceImpact2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != SWAP_WITH_PRICE_IMPACT2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        SWAP_WITH_PRICE_IMPACT2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {SWAP_WITH_PRICE_IMPACT2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -18879,12 +18098,7 @@ pub fn swap_with_price_impact2_invoke_signed(
     args: SwapWithPriceImpact2IxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    swap_with_price_impact2_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    swap_with_price_impact2_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn swap_with_price_impact2_verify_account_keys(
     accounts: SwapWithPriceImpact2Accounts<'_, '_>,
@@ -18892,7 +18106,10 @@ pub fn swap_with_price_impact2_verify_account_keys(
 ) -> Result<(), (Pubkey, Pubkey)> {
     for (actual, expected) in [
         (*accounts.lb_pair.key, keys.lb_pair),
-        (*accounts.bin_array_bitmap_extension.key, keys.bin_array_bitmap_extension),
+        (
+            *accounts.bin_array_bitmap_extension.key,
+            keys.bin_array_bitmap_extension,
+        ),
         (*accounts.reserve_x.key, keys.reserve_x),
         (*accounts.reserve_y.key, keys.reserve_y),
         (*accounts.user_token_in.key, keys.user_token_in),
@@ -19020,7 +18237,8 @@ impl From<[Pubkey; CLOSE_POSITION2_IX_ACCOUNTS_LEN]> for ClosePosition2Keys {
     }
 }
 impl<'info> From<ClosePosition2Accounts<'_, 'info>>
-for [AccountInfo<'info>; CLOSE_POSITION2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; CLOSE_POSITION2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: ClosePosition2Accounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -19032,7 +18250,8 @@ for [AccountInfo<'info>; CLOSE_POSITION2_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; CLOSE_POSITION2_IX_ACCOUNTS_LEN]>
-for ClosePosition2Accounts<'me, 'info> {
+    for ClosePosition2Accounts<'me, 'info>
+{
     fn from(arr: &'me [AccountInfo<'info>; CLOSE_POSITION2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
@@ -19053,11 +18272,9 @@ impl ClosePosition2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != CLOSE_POSITION2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        CLOSE_POSITION2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {CLOSE_POSITION2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -19095,9 +18312,7 @@ pub fn close_position2_invoke_with_program_id(
     let ix = close_position2_ix_with_program_id(program_id, keys)?;
     invoke_instruction(&ix, accounts)
 }
-pub fn close_position2_invoke(
-    accounts: ClosePosition2Accounts<'_, '_>,
-) -> ProgramResult {
+pub fn close_position2_invoke(accounts: ClosePosition2Accounts<'_, '_>) -> ProgramResult {
     close_position2_invoke_with_program_id(crate::ID, accounts)
 }
 pub fn close_position2_invoke_signed_with_program_id(
@@ -19181,8 +18396,7 @@ impl From<UpdateFeesAndReward2Accounts<'_, '_>> for UpdateFeesAndReward2Keys {
         }
     }
 }
-impl From<UpdateFeesAndReward2Keys>
-for [AccountMeta; UPDATE_FEES_AND_REWARD2_IX_ACCOUNTS_LEN] {
+impl From<UpdateFeesAndReward2Keys> for [AccountMeta; UPDATE_FEES_AND_REWARD2_IX_ACCOUNTS_LEN] {
     fn from(keys: UpdateFeesAndReward2Keys) -> Self {
         [
             AccountMeta {
@@ -19203,8 +18417,7 @@ for [AccountMeta; UPDATE_FEES_AND_REWARD2_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; UPDATE_FEES_AND_REWARD2_IX_ACCOUNTS_LEN]>
-for UpdateFeesAndReward2Keys {
+impl From<[Pubkey; UPDATE_FEES_AND_REWARD2_IX_ACCOUNTS_LEN]> for UpdateFeesAndReward2Keys {
     fn from(pubkeys: [Pubkey; UPDATE_FEES_AND_REWARD2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
@@ -19214,16 +18427,20 @@ for UpdateFeesAndReward2Keys {
     }
 }
 impl<'info> From<UpdateFeesAndReward2Accounts<'_, 'info>>
-for [AccountInfo<'info>; UPDATE_FEES_AND_REWARD2_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; UPDATE_FEES_AND_REWARD2_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: UpdateFeesAndReward2Accounts<'_, 'info>) -> Self {
-        [accounts.position.clone(), accounts.lb_pair.clone(), accounts.owner.clone()]
+        [
+            accounts.position.clone(),
+            accounts.lb_pair.clone(),
+            accounts.owner.clone(),
+        ]
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; UPDATE_FEES_AND_REWARD2_IX_ACCOUNTS_LEN]>
-for UpdateFeesAndReward2Accounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; UPDATE_FEES_AND_REWARD2_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for UpdateFeesAndReward2Accounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; UPDATE_FEES_AND_REWARD2_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
             lb_pair: &arr[1],
@@ -19231,16 +18448,7 @@ for UpdateFeesAndReward2Accounts<'me, 'info> {
         }
     }
 }
-pub const UPDATE_FEES_AND_REWARD2_IX_DISCM: [u8; 8] = [
-    32,
-    142,
-    184,
-    154,
-    103,
-    65,
-    184,
-    88,
-];
+pub const UPDATE_FEES_AND_REWARD2_IX_DISCM: [u8; 8] = [32, 142, 184, 154, 103, 65, 184, 88];
 #[derive(BorshDeserialize, BorshSerialize, Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct UpdateFeesAndReward2IxArgs {
@@ -19261,11 +18469,9 @@ impl UpdateFeesAndReward2IxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != UPDATE_FEES_AND_REWARD2_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        UPDATE_FEES_AND_REWARD2_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {UPDATE_FEES_AND_REWARD2_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -19331,12 +18537,7 @@ pub fn update_fees_and_reward2_invoke_signed(
     args: UpdateFeesAndReward2IxArgs,
     seeds: &[&[&[u8]]],
 ) -> ProgramResult {
-    update_fees_and_reward2_invoke_signed_with_program_id(
-        crate::ID,
-        accounts,
-        args,
-        seeds,
-    )
+    update_fees_and_reward2_invoke_signed_with_program_id(crate::ID, accounts, args, seeds)
 }
 pub fn update_fees_and_reward2_verify_account_keys(
     accounts: UpdateFeesAndReward2Accounts<'_, '_>,
@@ -19408,8 +18609,7 @@ impl From<ClosePositionIfEmptyAccounts<'_, '_>> for ClosePositionIfEmptyKeys {
         }
     }
 }
-impl From<ClosePositionIfEmptyKeys>
-for [AccountMeta; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN] {
+impl From<ClosePositionIfEmptyKeys> for [AccountMeta; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN] {
     fn from(keys: ClosePositionIfEmptyKeys) -> Self {
         [
             AccountMeta {
@@ -19440,8 +18640,7 @@ for [AccountMeta; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN] {
         ]
     }
 }
-impl From<[Pubkey; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN]>
-for ClosePositionIfEmptyKeys {
+impl From<[Pubkey; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN]> for ClosePositionIfEmptyKeys {
     fn from(pubkeys: [Pubkey; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: pubkeys[0],
@@ -19453,7 +18652,8 @@ for ClosePositionIfEmptyKeys {
     }
 }
 impl<'info> From<ClosePositionIfEmptyAccounts<'_, 'info>>
-for [AccountInfo<'info>; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN] {
+    for [AccountInfo<'info>; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN]
+{
     fn from(accounts: ClosePositionIfEmptyAccounts<'_, 'info>) -> Self {
         [
             accounts.position.clone(),
@@ -19465,10 +18665,9 @@ for [AccountInfo<'info>; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN] {
     }
 }
 impl<'me, 'info> From<&'me [AccountInfo<'info>; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN]>
-for ClosePositionIfEmptyAccounts<'me, 'info> {
-    fn from(
-        arr: &'me [AccountInfo<'info>; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN],
-    ) -> Self {
+    for ClosePositionIfEmptyAccounts<'me, 'info>
+{
+    fn from(arr: &'me [AccountInfo<'info>; CLOSE_POSITION_IF_EMPTY_IX_ACCOUNTS_LEN]) -> Self {
         Self {
             position: &arr[0],
             sender: &arr[1],
@@ -19478,16 +18677,7 @@ for ClosePositionIfEmptyAccounts<'me, 'info> {
         }
     }
 }
-pub const CLOSE_POSITION_IF_EMPTY_IX_DISCM: [u8; 8] = [
-    59,
-    124,
-    212,
-    118,
-    91,
-    152,
-    110,
-    157,
-];
+pub const CLOSE_POSITION_IF_EMPTY_IX_DISCM: [u8; 8] = [59, 124, 212, 118, 91, 152, 110, 157];
 #[derive(Clone, Debug, PartialEq)]
 pub struct ClosePositionIfEmptyIxData;
 impl ClosePositionIfEmptyIxData {
@@ -19497,11 +18687,9 @@ impl ClosePositionIfEmptyIxData {
         reader.read_exact(&mut maybe_discm)?;
         if maybe_discm != CLOSE_POSITION_IF_EMPTY_IX_DISCM {
             return Err(
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     format!(
-                        "discm does not match. Expected: {:?}. Received: {:?}",
-                        CLOSE_POSITION_IF_EMPTY_IX_DISCM, maybe_discm
+                        "discm does not match. Expected: {CLOSE_POSITION_IF_EMPTY_IX_DISCM:?}. Received: {maybe_discm:?}"
                     ),
                 ),
             );
@@ -19528,9 +18716,7 @@ pub fn close_position_if_empty_ix_with_program_id(
         data: ClosePositionIfEmptyIxData.try_to_vec()?,
     })
 }
-pub fn close_position_if_empty_ix(
-    keys: ClosePositionIfEmptyKeys,
-) -> std::io::Result<Instruction> {
+pub fn close_position_if_empty_ix(keys: ClosePositionIfEmptyKeys) -> std::io::Result<Instruction> {
     close_position_if_empty_ix_with_program_id(crate::ID, keys)
 }
 pub fn close_position_if_empty_invoke_with_program_id(

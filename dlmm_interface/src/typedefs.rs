@@ -66,6 +66,7 @@ pub struct StrategyParameters {
     pub min_bin_id: i32,
     pub max_bin_id: i32,
     pub strategy_type: StrategyType,
+    #[cfg_attr(feature = "serde", serde(with = "serde_arrays"))]
     pub parameteres: [u8; 64],
 }
 #[derive(Clone, Debug, BorshDeserialize, BorshSerialize, PartialEq)]
@@ -128,6 +129,7 @@ pub struct CustomizableParams {
     pub activation_point: Option<u64>,
     pub creator_pool_on_off_control: bool,
     pub base_fee_power_factor: u8,
+    #[cfg_attr(feature = "serde", serde(with = "serde_arrays"))]
     pub padding: [u8; 62],
 }
 #[derive(Clone, Debug, BorshDeserialize, BorshSerialize, PartialEq)]
@@ -157,6 +159,7 @@ pub struct CompressedBinDepositAmount2 {
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct InitializeLbPair2Params {
     pub active_id: i32,
+    #[cfg_attr(feature = "serde", serde(with = "serde_arrays"))]
     pub padding: [u8; 96],
 }
 #[derive(Clone, Debug, BorshDeserialize, BorshSerialize, PartialEq)]
@@ -221,6 +224,7 @@ pub struct StaticParameters {
     pub max_bin_id: i32,
     pub protocol_share: u16,
     pub base_fee_power_factor: u8,
+    #[cfg_attr(feature = "serde", serde(with = "serde_arrays"))]
     pub padding: [u8; 5],
 }
 #[repr(C)]
@@ -230,8 +234,10 @@ pub struct VariableParameters {
     pub volatility_accumulator: u32,
     pub volatility_reference: u32,
     pub index_reference: i32,
+    #[cfg_attr(feature = "serde", serde(with = "serde_arrays"))]
     pub padding: [u8; 4],
     pub last_update_timestamp: i64,
+    #[cfg_attr(feature = "serde", serde(with = "serde_arrays"))]
     pub padding1: [u8; 8],
 }
 #[repr(C)]
