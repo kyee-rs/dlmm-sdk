@@ -86,12 +86,13 @@ pub fn quote_exact_out(
         .pop()
         .context("Pool out of liquidity")?;
 
-        let mut active_bin_array = bin_arrays
+        let active_bin_array = bin_arrays
             .get(&active_bin_array_pubkey)
-            .cloned()
             .ok_or_else(|| anyhow::anyhow!("Active bin array not found"))?;
-
+        
+        let mut active_bin_array = active_bin_array.clone();
         let mut last_active_id = None;
+        
         loop {
             if !active_bin_array.is_bin_id_within_range(lb_pair.active_id)? || amount_out == 0 {
                 break;
@@ -111,22 +112,15 @@ pub fn quote_exact_out(
                     let max_amount_in = active_bin.get_max_amount_in(price, swap_for_y)?;
                     let max_fee = lb_pair.compute_fee(max_amount_in)?;
 
-                    total_amount_in = total_amount_in
-                        .checked_add(max_amount_in)
-                        .context("MathOverflow")?;
-                    total_fee = total_fee.checked_add(max_fee).context("MathOverflow")?;
-                    amount_out = amount_out
-                        .checked_sub(bin_max_amount_out)
-                        .context("MathOverflow")?;
+                    total_amount_in = total_amount_in.saturating_add(max_amount_in);
+                    total_fee = total_fee.saturating_add(max_fee);
+                    amount_out = amount_out.saturating_sub(bin_max_amount_out);
                 } else {
                     let amount_in = Bin::get_amount_in(amount_out, price, swap_for_y)?;
                     let fee = lb_pair.compute_fee(amount_in)?;
 
-                    total_amount_in = total_amount_in
-                        .checked_add(amount_in)
-                        .context("MathOverflow")?;
-                    total_fee = total_fee.checked_add(fee).context("MathOverflow")?;
-
+                    total_amount_in = total_amount_in.saturating_add(amount_in);
+                    total_fee = total_fee.saturating_add(fee);
                     amount_out = 0;
                 }
             }
@@ -137,9 +131,7 @@ pub fn quote_exact_out(
         }
     }
 
-    total_amount_in = total_amount_in
-        .checked_add(total_fee)
-        .context("MathOverflow")?;
+    total_amount_in = total_amount_in.saturating_add(total_fee);
 
     total_amount_in =
         calculate_transfer_fee_included_amount(in_mint_account, total_amount_in, epoch)?.amount;
@@ -195,12 +187,13 @@ pub fn quote_exact_in(
         .pop()
         .context("Pool out of liquidity")?;
 
-        let mut active_bin_array = bin_arrays
+        let active_bin_array = bin_arrays
             .get(&active_bin_array_pubkey)
-            .cloned()
             .ok_or_else(|| anyhow::anyhow!("Active bin array not found"))?;
-
+        
+        let mut active_bin_array = active_bin_array.clone();
         let mut last_active_id = None;
+        
         loop {
             if !active_bin_array.is_bin_id_within_range(lb_pair.active_id)? || amount_left == 0 {
                 break;
@@ -226,12 +219,9 @@ pub fn quote_exact_in(
                     (amount_left, amount_out, fee)
                 };
 
-                amount_left = amount_left.checked_sub(amount_in).context("MathOverflow")?;
-
-                total_amount_out = total_amount_out
-                    .checked_add(amount_out)
-                    .context("MathOverflow")?;
-                total_fee = total_fee.checked_add(fee).context("MathOverflow")?;
+                amount_left = amount_left.saturating_sub(amount_in);
+                total_amount_out = total_amount_out.saturating_add(amount_out);
+                total_fee = total_fee.saturating_add(fee);
             }
 
             if amount_left > 0 {
