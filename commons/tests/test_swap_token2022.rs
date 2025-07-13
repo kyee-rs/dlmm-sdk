@@ -127,13 +127,7 @@ async fn test_swap_exact_out() {
 
     let (mut banks_client, payer, _recent_blockhash) = test.start().await;
 
-    warp_sol(
-        &payer,
-        payer.pubkey(),
-        1 * LAMPORTS_PER_SOL,
-        &mut banks_client,
-    )
-    .await;
+    warp_sol(&payer, payer.pubkey(), LAMPORTS_PER_SOL, &mut banks_client).await;
 
     for (in_mint, out_mint, out_amount) in [
         (token_y_mint, token_x_mint, 10_000_000),
@@ -202,7 +196,7 @@ async fn test_swap_exact_out() {
 
         let quote_result = commons::quote::quote_exact_out(
             lb_pair,
-            &lb_pair_state,
+            &mut lb_pair_state.clone(),
             out_amount,
             swap_for_y,
             bin_arrays,
@@ -213,7 +207,7 @@ async fn test_swap_exact_out() {
         )
         .unwrap();
 
-        println!("quote_result {:?}", quote_result);
+        println!("quote_result {quote_result:?}");
 
         let user_token_out_account_before = banks_client
             .get_account(user_token_out)
@@ -328,13 +322,7 @@ async fn test_swap() {
 
     let (mut banks_client, payer, _recent_blockhash) = test.start().await;
 
-    warp_sol(
-        &payer,
-        payer.pubkey(),
-        1 * LAMPORTS_PER_SOL,
-        &mut banks_client,
-    )
-    .await;
+    warp_sol(&payer, payer.pubkey(), LAMPORTS_PER_SOL, &mut banks_client).await;
 
     for (in_mint, out_mint, amount_in) in [
         (token_y_mint, token_x_mint, 10_000_000),
@@ -403,7 +391,7 @@ async fn test_swap() {
 
         let quote_result = commons::quote::quote_exact_in(
             lb_pair,
-            &lb_pair_state,
+            &mut lb_pair_state.clone(),
             amount_in,
             swap_for_y,
             bin_arrays,
@@ -414,7 +402,7 @@ async fn test_swap() {
         )
         .unwrap();
 
-        println!("quote_result {:?}", quote_result);
+        println!("quote_result {quote_result:?}");
 
         let user_token_out_account_before = banks_client
             .get_account(user_token_out)

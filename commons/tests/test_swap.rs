@@ -127,7 +127,7 @@ async fn test_swap_exact_out() {
     warp_sol(
         &payer,
         payer.pubkey(),
-        1 * LAMPORTS_PER_SOL,
+        LAMPORTS_PER_SOL,
         &mut banks_client,
     )
     .await;
@@ -195,7 +195,7 @@ async fn test_swap_exact_out() {
 
     let quote_result = commons::quote::quote_exact_out(
         lb_pair,
-        &lb_pair_state,
+        &mut lb_pair_state.clone(),
         out_amount,
         false,
         bin_arrays,
@@ -206,7 +206,7 @@ async fn test_swap_exact_out() {
     )
     .unwrap();
 
-    println!("quote_result {:?}", quote_result);
+    println!("quote_result {quote_result:?}");
 
     let user_token_out_account_before = banks_client
         .get_account(user_token_out)
@@ -384,7 +384,7 @@ async fn test_swap() {
 
     let quote_result = commons::quote::quote_exact_in(
         lb_pair,
-        &lb_pair_state,
+        &mut lb_pair_state.clone(),
         amount_in,
         false,
         bin_arrays,
@@ -395,7 +395,7 @@ async fn test_swap() {
     )
     .unwrap();
 
-    println!("quote_result {:?}", quote_result);
+    println!("quote_result {quote_result:?}");
 
     let user_token_out_account_before = banks_client
         .get_account(user_token_out)

@@ -226,9 +226,7 @@ pub fn quote_exact_in(
                     (amount_left, amount_out, fee)
                 };
 
-                amount_left = amount_left
-                    .checked_sub(amount_in)
-                    .context("MathOverflow")?;
+                amount_left = amount_left.checked_sub(amount_in).context("MathOverflow")?;
 
                 total_amount_out = total_amount_out
                     .checked_add(amount_out)
@@ -689,7 +687,7 @@ mod tests {
             let mint_x_account = mint_x_account.clone();
             let mint_y_account = mint_y_account.clone();
             let clock = clock.clone();
-            
+
             tokio::spawn(async move {
                 quote_exact_in(
                     sol_usdc,
@@ -706,18 +704,21 @@ mod tests {
         });
 
         let results = futures_util::future::join_all(tasks).await;
-        
+
         for result in results {
             result.unwrap().unwrap();
         }
 
-        println!("100_000 parallel async quotes completed in: {:?}", timer.elapsed());
+        println!(
+            "100_000 parallel async quotes completed in: {:?}",
+            timer.elapsed()
+        );
     }
 
     #[tokio::test]
     async fn test_swap_quote_exact_in_100k_parallel_rayon() {
         use rayon::prelude::*;
-        
+
         let rpc_client = RpcClient::new(Cluster::Mainnet.url().to_string());
         let sol_usdc = Pubkey::from_str("HTvjzsfX3yU6BUodCjZ5vZkUrAxMDTrBs3CJaq43ashR").unwrap();
 
@@ -786,13 +787,16 @@ mod tests {
             result.unwrap();
         }
 
-        println!("100_000 parallel rayon quotes completed in: {:?}", timer.elapsed());
+        println!(
+            "100_000 parallel rayon quotes completed in: {:?}",
+            timer.elapsed()
+        );
     }
 
     #[tokio::test]
     async fn test_compare_parallel_performance() {
         use rayon::prelude::*;
-        
+
         let rpc_client = RpcClient::new(Cluster::Mainnet.url().to_string());
         let sol_usdc = Pubkey::from_str("HTvjzsfX3yU6BUodCjZ5vZkUrAxMDTrBs3CJaq43ashR").unwrap();
 
@@ -856,7 +860,7 @@ mod tests {
             .unwrap();
         }
         let sequential_time = timer.elapsed();
-        println!("Sequential: {:?}", sequential_time);
+        println!("Sequential: {sequential_time:?}");
 
         let timer = std::time::Instant::now();
         let tasks = (0..100_000).map(|_| {
@@ -864,7 +868,7 @@ mod tests {
             let mint_x_account = mint_x_account.clone();
             let mint_y_account = mint_y_account.clone();
             let clock = clock.clone();
-            
+
             tokio::spawn(async move {
                 quote_exact_in(
                     sol_usdc,
@@ -884,7 +888,7 @@ mod tests {
             result.unwrap().unwrap();
         }
         let async_time = timer.elapsed();
-        println!("Async parallel: {:?}", async_time);
+        println!("Async parallel: {async_time:?}");
 
         let timer = std::time::Instant::now();
         let results: Vec<_> = (0..100_000)
@@ -907,10 +911,16 @@ mod tests {
             result.unwrap();
         }
         let rayon_time = timer.elapsed();
-        println!("Rayon parallel: {:?}", rayon_time);
+        println!("Rayon parallel: {rayon_time:?}");
 
         println!("Speedup vs sequential:");
-        println!("Async: {:.2}x", sequential_time.as_secs_f64() / async_time.as_secs_f64());
-        println!("Rayon: {:.2}x", sequential_time.as_secs_f64() / rayon_time.as_secs_f64());
+        println!(
+            "Async: {:.2}x",
+            sequential_time.as_secs_f64() / async_time.as_secs_f64()
+        );
+        println!(
+            "Rayon: {:.2}x",
+            sequential_time.as_secs_f64() / rayon_time.as_secs_f64()
+        );
     }
 }

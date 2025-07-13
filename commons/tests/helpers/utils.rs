@@ -27,7 +27,7 @@ pub async fn process_and_assert_ok(
     );
 
     let result = banks_client.process_transaction(tx).await.inspect_err(|e| {
-        println!("Transaction error: {}", e);
+        println!("Transaction error: {e}");
     });
 
     assert_matches!(result, Ok(()));
@@ -69,7 +69,7 @@ pub async fn create_associated_token_account(
     program_id: &Pubkey,
     banks_client: &mut BanksClient,
 ) {
-    println!("{}", program_id);
+    println!("{program_id}");
     let ins = vec![
         spl_associated_token_account::instruction::create_associated_token_account(
             &payer.pubkey(),
@@ -108,8 +108,8 @@ pub async fn warp_sol(
 
     process_and_assert_ok(
         &[create_wsol_ata_ix, transfer_sol_ix, sync_native_ix],
-        &payer,
-        &[&payer],
+        payer,
+        &[payer],
         banks_client,
     )
     .await;
