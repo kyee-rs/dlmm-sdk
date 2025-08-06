@@ -26,7 +26,7 @@ rayon = { workspace = true }
 
 [dev-dependencies]
 spl-associated-token-account = { workspace = true }
-solana-program-test = "2.3.4"
+solana-program-test = "2.2.0"
 assert_matches = "1.5.0"
 solana-program = { workspace = true }
 spl-memo = { workspace = true, features = ["no-entrypoint"] }
