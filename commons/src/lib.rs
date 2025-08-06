@@ -25,8 +25,6 @@ pub use math::*;
 pub mod typedefs;
 pub use typedefs::*;
 
-pub mod rpc_client_extension;
-
 pub mod account_filters;
 pub use account_filters::*;
 

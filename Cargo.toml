@@ -36,8 +36,6 @@ hyper = "1.6.0"
 routerify = "3"
 
 tokio = "1.46.1"
-futures-util = "0.3.0"
-async-trait = "0.1.88"
 
 anyhow = "1.0.71"
 
@@ -48,7 +46,6 @@ chrono = "0.4.41"
 ureq = "3.0.12"
 
 itertools = "0.14.0"
-rayon = "1.10.0"
 
 commons = { path = "./commons" }
 
