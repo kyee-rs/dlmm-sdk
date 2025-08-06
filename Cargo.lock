@@ -3,16 +3,6 @@
 version = 4
 
 [[package]]
-name = "Inflector"
-version = "0.11.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe438c63458706e03479442743baae6c88256498e6431708f6dfc520a26515d3"
-dependencies = [
- "lazy_static",
- "regex",
-]
-
-[[package]]
 name = "addr2line"
 version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -271,25 +261,6 @@ dependencies = [
  "quote",
  "serde_json",
  "syn 1.0.109",
-]
-
-[[package]]
-name = "anchor-client"
-version = "0.31.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49b3e91b12501d37c8f07de9da8c7d22067998a7760a515231187afb47ded225"
-dependencies = [
- "anchor-lang",
- "anyhow",
- "futures",
- "regex",
- "serde",
- "solana-account-decoder",
- "solana-client",
- "solana-sdk",
- "thiserror 1.0.69",
- "tokio",
- "url",
 ]
 
 [[package]]
@@ -1150,7 +1121,6 @@ dependencies = [
 name = "commons"
 version = "0.3.1"
 dependencies = [
- "anchor-client",
  "anchor-spl",
  "anyhow",
  "assert_matches",
@@ -1160,6 +1130,7 @@ dependencies = [
  "num-integer",
  "num-traits",
  "ruint",
+ "solana-client",
  "solana-program",
  "solana-program-test",
  "solana-sdk",
@@ -4416,49 +4387,6 @@ dependencies = [
  "solana-pubkey",
  "solana-sdk-ids",
  "solana-sysvar",
-]
-
-[[package]]
-name = "solana-account-decoder"
-version = "2.3.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2368a6ff4b9077501a13dca5b409947757c7b3690213c5cd5bd513a89bf343f1"
-dependencies = [
- "Inflector",
- "base64 0.22.1",
- "bincode",
- "bs58",
- "bv",
- "serde",
- "serde_derive",
- "serde_json",
- "solana-account",
- "solana-account-decoder-client-types",
- "solana-address-lookup-table-interface",
- "solana-clock",
- "solana-config-program-client",
- "solana-epoch-schedule",
- "solana-fee-calculator",
- "solana-instruction",
- "solana-loader-v3-interface",
- "solana-nonce",
- "solana-program-option",
- "solana-program-pack",
- "solana-pubkey",
- "solana-rent",
- "solana-sdk-ids",
- "solana-slot-hashes",
- "solana-slot-history",
- "solana-stake-interface",
- "solana-sysvar",
- "solana-vote-interface",
- "spl-generic-token",
- "spl-token 8.0.0",
- "spl-token-2022 8.0.1",
- "spl-token-group-interface 0.6.0",
- "spl-token-metadata-interface 0.7.0",
- "thiserror 2.0.12",
- "zstd",
 ]
 
 [[package]]

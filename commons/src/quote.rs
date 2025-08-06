@@ -1,6 +1,6 @@
 use crate::*;
-use anchor_client::solana_sdk::pubkey::Pubkey;
 use core::result::Result::Ok;
+use solana_sdk::pubkey::Pubkey;
 use solana_sdk::{account::Account, clock::Clock};
 use std::{collections::HashMap, ops::Deref};
 

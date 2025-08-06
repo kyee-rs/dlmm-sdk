@@ -1,9 +1,9 @@
 use crate::*;
-use anchor_client::solana_client::nonblocking::rpc_client::RpcClient;
-use anchor_client::solana_client::rpc_client::RpcClient as BlockingRpcClient;
 use anchor_spl::token_2022::spl_token_2022::extension;
 use anchor_spl::token_2022::spl_token_2022::extension::transfer_fee::*;
 use anchor_spl::{token::spl_token, token_2022::spl_token_2022::extension::*};
+use solana_client::nonblocking::rpc_client::RpcClient;
+use solana_client::rpc_client::RpcClient as BlockingRpcClient;
 use solana_sdk::account::Account;
 use solana_sdk::{instruction::AccountMeta, pubkey::Pubkey};
 use spl_transfer_hook_interface::offchain::add_extra_account_metas_for_execute;
