@@ -1,7 +1,8 @@
 use crate::*;
-use solana_sdk::pubkey::Pubkey;
 use core::result::Result::Ok;
-use solana_sdk::{account::Account, clock::Clock};
+use solana_account::Account;
+use solana_program::clock::Clock;
+use solana_program::pubkey::Pubkey;
 use std::collections::HashMap;
 
 #[derive(Debug)]

@@ -1,6 +1,6 @@
 #[cfg(feature = "offchain")]
 use anchor_client::solana_client::rpc_filter::{Memcmp, RpcFilterType};
-use solana_sdk::pubkey::Pubkey;
+use solana_program::pubkey::Pubkey;
 
 #[cfg(feature = "offchain")]
 pub fn position_filter_by_wallet_and_pair(wallet: Pubkey, pair: Pubkey) -> Vec<RpcFilterType> {

@@ -51,18 +51,15 @@ extern crate log;
 use tokio::time::interval;
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Default)]
 pub enum MarketMakingMode {
     ModeRight,
     ModeLeft,
     ModeBoth,
+    #[default]
     ModeView,
 }
 
-impl Default for MarketMakingMode {
-    fn default() -> Self {
-        MarketMakingMode::ModeView
-    }
-}
 
 impl FromStr for MarketMakingMode {
     type Err = anyhow::Error;

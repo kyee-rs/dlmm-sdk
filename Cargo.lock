@@ -1174,6 +1174,7 @@ dependencies = [
  "num-integer",
  "num-traits",
  "ruint",
+ "solana-account",
  "solana-program",
  "solana-program-test",
  "solana-sdk",

@@ -111,7 +111,7 @@ async fn test_swap_exact_out() {
     warp_sol(
         &payer,
         payer.pubkey(),
-        1 * LAMPORTS_PER_SOL,
+        LAMPORTS_PER_SOL,
         &mut banks_client,
     )
     .await;
@@ -307,7 +307,7 @@ async fn test_swap() {
     warp_sol(
         &payer,
         payer.pubkey(),
-        1 * LAMPORTS_PER_SOL,
+        LAMPORTS_PER_SOL,
         &mut banks_client,
     )
     .await;

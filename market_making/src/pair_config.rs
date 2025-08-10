@@ -20,7 +20,7 @@ pub fn should_market_making(config: &Vec<PairConfig>) -> bool {
             return true;
         }
     }
-    return false;
+    false
 }
 
 pub fn get_pair_config(config: &Vec<PairConfig>, pair_addr: Pubkey) -> PairConfig {
@@ -29,7 +29,7 @@ pub fn get_pair_config(config: &Vec<PairConfig>, pair_addr: Pubkey) -> PairConfi
             return pair_config.clone();
         }
     }
-    return PairConfig::default();
+    PairConfig::default()
 }
 
 pub fn get_config_from_file(path: &str) -> Result<Vec<PairConfig>> {

@@ -746,8 +746,8 @@ fn get_bin_deposit_amount(
 
     assert!(c1 > c0);
 
-    let amount_into_bin = c1 - c0;
-    amount_into_bin
+    
+    c1 - c0
 }
 
 // c(p) = 5 * 10^8 ((p - 0.1)/0.7) ^ 1.25, where P = ui price
