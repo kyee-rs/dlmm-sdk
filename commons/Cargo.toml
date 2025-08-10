@@ -6,22 +6,23 @@ description = "Common libraries for DLMM"
 authors = ["tian <tian@racoons.dev>"]
 
 [features]
+offchain = ["dep:anchor-client", "dep:tokio", "dep:async-trait"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 anchor-lang = { workspace = true }
-anchor-client = { workspace = true, features = ["async"] }
+anchor-client = { workspace = true, features = ["async"], optional = true }
 anchor-spl = { workspace = true }
 anyhow = { workspace = true }
-tokio = { workspace = true, features = ["full", "parking_lot"] }
+tokio = { workspace = true, features = ["full", "parking_lot"], optional = true }
 bincode = { workspace = true }
 solana-sdk = { workspace = true }
 ruint = { workspace = true }
 num-traits = { workspace = true }
 num-integer = { workspace = true }
 bytemuck = { workspace = true, features = ["derive", "min_const_generics"] }
-async-trait = { workspace = true }
+async-trait = { workspace = true, optional = true }
 spl-transfer-hook-interface = { workspace = true }
 
 [dev-dependencies]

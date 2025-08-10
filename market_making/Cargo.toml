@@ -24,7 +24,7 @@ spl-associated-token-account = { workspace = true }
 solana-transaction-status = { workspace = true }
 bs58 = { workspace = true }
 chrono = { workspace = true }
-commons = { workspace = true }
+commons = { workspace = true, features = ["offchain"] }
 solana-account-decoder = { workspace = true }
 itertools = { workspace = true }
 rust_decimal = { workspace = true, features = ["maths"] }

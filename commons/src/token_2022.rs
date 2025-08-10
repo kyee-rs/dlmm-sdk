@@ -1,11 +1,17 @@
 use crate::*;
-use anchor_client::solana_client::nonblocking::rpc_client::RpcClient;
-use anchor_client::solana_client::rpc_client::RpcClient as BlockingRpcClient;
 use anchor_spl::token_2022::spl_token_2022::extension;
 use anchor_spl::token_2022::spl_token_2022::extension::transfer_fee::*;
 use anchor_spl::{token::spl_token, token_2022::spl_token_2022::extension::*};
 use solana_sdk::account::Account;
-use solana_sdk::{instruction::AccountMeta, pubkey::Pubkey};
+use solana_sdk::pubkey::Pubkey;
+
+#[cfg(feature = "offchain")]
+use anchor_client::solana_client::nonblocking::rpc_client::RpcClient;
+#[cfg(feature = "offchain")]
+use anchor_client::solana_client::rpc_client::RpcClient as BlockingRpcClient;
+#[cfg(feature = "offchain")]
+use solana_sdk::instruction::AccountMeta;
+#[cfg(feature = "offchain")]
 use spl_transfer_hook_interface::offchain::add_extra_account_metas_for_execute;
 
 const ONE_IN_BASIS_POINTS: u128 = MAX_FEE_BASIS_POINTS as u128;
@@ -15,6 +21,7 @@ pub enum ActionType {
     Reward(usize),
 }
 
+#[cfg(feature = "offchain")]
 pub async fn get_potential_token_2022_related_ix_data_and_accounts(
     lb_pair: &LbPair,
     rpc_client: RpcClient,
@@ -60,6 +67,7 @@ pub async fn get_potential_token_2022_related_ix_data_and_accounts(
     }
 }
 
+#[cfg(feature = "offchain")]
 pub async fn get_extra_account_metas_for_transfer_hook(
     mint: Pubkey,
     rpc_client: RpcClient,

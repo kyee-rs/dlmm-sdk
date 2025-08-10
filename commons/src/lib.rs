@@ -30,6 +30,7 @@ pub use math::*;
 pub mod typedefs;
 pub use typedefs::*;
 
+#[cfg(feature = "offchain")]
 pub mod rpc_client_extension;
 
 pub mod account_filters;

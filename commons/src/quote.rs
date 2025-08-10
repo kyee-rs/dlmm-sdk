@@ -1,5 +1,5 @@
 use crate::*;
-use anchor_client::solana_sdk::pubkey::Pubkey;
+use solana_sdk::pubkey::Pubkey;
 use core::result::Result::Ok;
 use solana_sdk::{account::Account, clock::Clock};
 use std::collections::HashMap;
@@ -301,7 +301,7 @@ pub fn get_bin_array_pubkeys_for_swap(
     Ok(bin_array_pubkeys)
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "offchain"))]
 mod tests {
     use super::*;
     use anchor_client::solana_sdk::clock::Clock;

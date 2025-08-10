@@ -10,7 +10,7 @@ authors = ["tian <tian@racoons.dev>"]
 [features]
 
 [dependencies]
-commons = { workspace = true }
+commons = { workspace = true, features = ["offchain"] }
 anchor-lang = { workspace = true }
 anchor-spl = { workspace = true }
 anchor-client = { workspace = true, features = ["async"] }
